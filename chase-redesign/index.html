@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Chase Fluent · Design review</title>
+<style>
+:root{--bg:#070719;--bg2:#0e0d2a;--sf:#15143a;--sf2:#1c1b4a;--bd:#2c2a66;--tx:#f3f1ff;--tx2:#aeaad6;--p:#8654ce;--p2:#a678ff;--pt:#c9b3ff;--ok:#3ddc97;--gold:#f7c948;--r:18px}
+[data-theme=light]{--bg:#f8faff;--bg2:#eef0fb;--sf:#fff;--sf2:#f1ecff;--bd:#dcd6f5;--tx:#1a1640;--tx2:#5a5486;--p:#6d3fd1;--p2:#7c4dff;--pt:#5b3fa6;--ok:#0f8a5a;--gold:#9a6b00}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:16px/1.5 "Plus Jakarta Sans",system-ui,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}a{color:var(--pt)}
+.banner{position:sticky;top:0;z-index:50;background:#2a2108;color:#ffd78a;font-size:12.5px;padding:6px 12px;text-align:center}
+.app{display:grid;min-height:100vh;grid-template-columns:1fr}
+.top{display:flex;align-items:center;gap:12px;padding:12px 16px;max-width:1180px;margin:0 auto;width:100%}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em;text-decoration:none;color:var(--tx)}
+.brand img{width:34px;height:34px;border-radius:50%}
+.brand small{display:block;font-size:10px;letter-spacing:.14em;color:var(--pt);font-weight:700}
+.sp{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:14px;border:1px solid var(--bd);background:var(--sf);font-weight:700;text-decoration:none;color:var(--tx);transition:transform .15s,box-shadow .2s,background .2s}
+.btn.pri{background:linear-gradient(135deg,var(--p),var(--p2));border-color:transparent;color:#fff;box-shadow:0 10px 30px -10px var(--p)}
+.btn:active{transform:scale(.97)}@media(hover:hover){.btn:hover{transform:translateY(-2px)}}
+.ic{min-width:44px;min-height:44px;border-radius:12px;border:1px solid var(--bd);background:var(--sf)}
+:focus-visible{outline:3px solid var(--p2);outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+section{padding:56px 0}
+h1{font-size:clamp(2.2rem,6vw,4.2rem);line-height:1.02;letter-spacing:-.035em;margin:0 0 16px}
+h2{font-size:clamp(1.6rem,3.6vw,2.4rem);letter-spacing:-.025em;margin:0 0 12px}
+.acc{color:var(--p2)}[data-theme=light] .acc{color:var(--pt)}
+.lede{color:var(--tx2);font-size:1.1rem;max-width:52ch}
+.hero{display:grid;gap:28px;align-items:center;padding-top:28px}
+@media(min-width:860px){.hero{grid-template-columns:1.1fr .9fr}}
+.mascot{position:relative;border-radius:28px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 30px 80px -30px var(--p);animation:float 7s ease-in-out infinite}
+.mascot img{display:block;width:100%;height:auto}
+@keyframes float{50%{transform:translateY(-6px)}}
+.eyebrow{font-size:12px;letter-spacing:.16em;font-weight:800;color:var(--pt);text-transform:uppercase;margin-bottom:12px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:18px}
+.grid{display:grid;gap:14px}.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.reh{margin-top:22px;max-width:520px}
+.bubble{background:var(--sf2);border:1px solid var(--bd);border-radius:16px 16px 16px 4px;padding:12px 14px;margin-bottom:10px}
+.opt{display:block;width:100%;text-align:left;min-height:48px;padding:10px 14px;margin:8px 0;border-radius:14px;border:1px solid var(--bd);background:var(--sf);transition:border-color .2s,background .2s,transform .12s}
+.opt:hover,.opt.sel{border-color:var(--p2);background:var(--sf2)}.opt.good{border-color:var(--ok)}
+.fb{min-height:1.6em;color:var(--ok);font-weight:700;margin-top:6px}
+.place{text-decoration:none;color:var(--tx);position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--bd);background:var(--sf);text-align:left;padding:0;transition:transform .2s}
+.place img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}.place span{display:block;padding:10px 12px;font-weight:700}
+.place small{display:block;padding:0 12px 12px;color:var(--tx2);font-weight:500}
+@media(hover:hover){.place:hover{transform:translateY(-4px)}}
+.tier{display:flex;flex-direction:column;gap:8px}.tier b{font-size:1.2rem}.tier .n{font-size:2.2rem;font-weight:800}
+.note{color:var(--tx2);font-size:.9rem}.pill{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--sf2);border:1px solid var(--bd);font-size:12px;font-weight:700}
+.warn{border-left:4px solid var(--gold);padding:8px 12px;background:var(--sf2);border-radius:8px;font-size:.9rem}
+/* onboarding */
+.onb{max-width:560px;margin:0 auto;padding:16px}
+.bar{height:6px;border-radius:9px;background:var(--sf2);overflow:hidden;margin:6px 0 22px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--p),var(--p2));transition:width .4s ease}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{min-height:44px;padding:0 16px;border-radius:99px;border:1px solid var(--bd);background:var(--sf);font-weight:600}.chip.sel{background:var(--p);border-color:var(--p);color:#fff}.chip[disabled]{opacity:.5;cursor:not-allowed}
+.stepc{animation:in .35s ease}@keyframes in{from{opacity:0;transform:translateY(10px)}}
+/* app shell */
+.shell{display:grid;grid-template-columns:1fr;min-height:100vh;padding-bottom:76px}
+.nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--bg2);border-top:1px solid var(--bd);z-index:40}
+.nav a{flex:1;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:700;color:var(--tx2);text-decoration:none}.nav a.on{color:var(--p2)}.nav svg{width:22px;height:22px}
+@media(min-width:900px){.shell{grid-template-columns:220px 1fr;padding-bottom:0}.nav{position:sticky;top:0;flex-direction:column;height:100vh;border-top:0;border-right:1px solid var(--bd);padding:16px 8px;gap:4px;grid-row:1;align-self:start}.nav a{flex:0;flex-direction:row;justify-content:flex-start;gap:12px;padding:0 14px;border-radius:12px;min-height:48px;font-size:14px}.nav a.on{background:var(--sf2)}}
+.main{padding:18px 16px 40px;max-width:900px;width:100%}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:16px}.hd h2{margin:0}
+.next{background:linear-gradient(135deg,#3b1f8f,#6d3fd1);color:#fff;border:0;border-radius:22px;padding:22px}
+.ring{--v:62;width:84px;height:84px;border-radius:50%;background:conic-gradient(var(--p2) calc(var(--v)*1%),var(--sf2) 0);display:grid;place-items:center}.ring i{width:62px;height:62px;border-radius:50%;background:var(--sf);display:grid;place-items:center;font-style:normal;font-weight:800}
+.mic{width:84px;height:84px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;font-size:28px;box-shadow:0 0 0 0 var(--p2)}.mic.rec{animation:pulse 1.2s infinite}@keyframes pulse{70%{box-shadow:0 0 0 22px transparent}}
+.wave{display:flex;gap:3px;height:34px;align-items:center}.wave i{width:4px;background:var(--p2);border-radius:3px;height:8px}.rec~.wave i,.wave.on i{animation:w .8s infinite ease-in-out}.wave i:nth-child(2n){animation-delay:.2s!important}@keyframes w{50%{height:30px}}
+.bad{background:var(--sf2);padding:2px 8px;border-radius:8px;font-size:12px}
+.hidden{display:none!important}
+@media(max-width:520px){.hide-s{display:none!important}.top{gap:8px;padding:10px 12px}.brand small{display:none}.top .btn{padding:0 14px}h1{font-size:2.1rem}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="banner">DESIGN REVIEW · interactive prototype with SAMPLE data · not the product · no accounts, payments, AI or saved progress</div>
+<div id="root"></div>
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const A="assets/";
+const ICON={today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',learn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4zM20 5h-6"/></svg>',practice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',explore:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2 6-4 0 2-6z"/></svg>',progress:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'};
+const state={lang:"Spanish",level:"Beginner",goal:"Travel",mins:10,step:0,theme:"dark"};
+const logo=`<a class="brand" href="#/"><img src="${A}mark-128.png" alt=""><span>Chase Fluent<small>APRENDE CON HISTORIAS</small></span></a>`;
+const themeBtn=`<button class="ic" id="th" aria-label="Toggle light and dark theme">◐</button>`;
+function pub(){return `<header class="top">${logo}<span class="sp"></span><a class="btn hide-s" href="#/world" style="min-height:44px">Chase World</a><a class="btn pri" href="#/start" style="min-height:44px">Get started</a>${themeBtn}</header>`}
+function landing(){return pub()+`<main class="wrap">
+<section class="hero"><div><div class="eyebrow">Speaking first · Real places · Real progress</div>
+<h1>Say it out loud.<br><span class="acc">Then live it.</span></h1>
+<p class="lede">Chase Fluent starts with a real conversation, not a vocabulary list. Practise speaking in the app, then step into Chase World and use it in living places.</p>
+<p style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn pri" href="#/start">Start free</a><a class="btn" href="#/today">See the app</a></p>
+<div class="card reh" aria-live="polite"><div class="eyebrow">Try a 20-second rehearsal · sample</div><div class="bubble">At the butcher's counter. Don Nacho looks up: <b>«¿Qué le pongo?»</b></div>
+<button class="opt" data-r="0">«Quisiera un kilo de bistec, por favor.»</button><button class="opt" data-r="1">«Yo es bistec.»</button><button class="opt" data-r="2">«Hola, ¿cómo estás?»</button><div class="fb" id="fb"></div></div></div>
+<div class="mascot"><img src="${A}chase-hoodie-760.webp" alt="Chase, the tan dog with large ears, dark muzzle and a purple CF hoodie" width="760" height="950"></div></section>
+<section><div class="eyebrow">How it works</div><h2>Three short steps. One loop.</h2><div class="grid g3">
+<div class="card"><b>1 · Rehearse</b><p class="note">A real turn first, so you hear the language before any form. Chase repeats, slows down and shows the meaning.</p></div>
+<div class="card"><b>2 · Practise speaking</b><p class="note">Short speaking drills with clear feedback: what you said, what was expected, one thing to fix.</p></div>
+<div class="card"><b>3 · Use it in Chase World</b><p class="note">Walk into the butcher's or the pharmacy and complete a mission with what you just learned. Progress carries back.</p></div></div></section>
+<section><div class="eyebrow">Chase World</div><h2>Places that teach.</h2><p class="lede">Missions live in real-feeling places. Two places are playable today: the butcher's and the pharmacy. The art shown is the existing approved environment art.</p><div class="grid g4" style="margin-top:18px">${[["place-cafe-234","Food · butcher's","Playable today"],["scenario-doctor-158","Health · pharmacy","Playable today"],["place-airport-234","Travel","In development"],["place-restaurant-240","Restaurant","In development"]].map(p=>`<a class="place" href="#/world"><img src="${A}${p[0]}.webp" alt=""><span>${p[1]}</span><small>${p[2]}</small></a>`).join("")}</div></section>
+<section><div class="eyebrow">Languages & access</div><h2>Start with one. Grow to eleven.</h2><div class="grid g3">
+<div class="card tier"><b>Free</b><span class="n">1</span><span>target language</span><span class="note">Limited daily actions. No card.</span></div>
+<div class="card tier"><b>Pro</b><span class="n">3</span><span>target languages</span><span class="note">Proposed access tier.</span></div>
+<div class="card tier"><b>Premium</b><span class="n">11</span><span>target languages</span><span class="note">Proposed access tier.</span></div></div>
+<p class="warn" style="margin-top:14px">Eleven languages are planned. A language shows as <b>Available</b> only when its course is genuinely complete; the rest show <b>In development</b>. No prices are announced and billing is not active.</p></section>
+<section style="text-align:center"><h2>Ready to say your first sentence?</h2><a class="btn pri" href="#/start">Start free</a><p class="note">Sample design review. No account is created here.</p></section></main>`}
+const STEPS=[
+{t:"Say one thing",b:()=>`<p class="lede">Before any question: one real turn. Nothing is graded.</p><div class="bubble">Café Buenavista. The barista smiles: <b>«¿Qué desea tomar?»</b></div>${["«Un café con leche, por favor.»","«No sé.»","Skip for now"].map((x,i)=>`<button class="opt" data-pick="${i}">${x}</button>`).join("")}<div class="fb" id="ofb"></div>`},
+{t:"Which language?",b:()=>`<p class="lede">Free includes <b>1</b> target language. You can switch later.</p><div class="chips">${[["Spanish","Available"],["English","Available"],["French","In development"],["German","In development"],["Portuguese","In development"],["Italian","In development"]].map(l=>`<button class="chip ${state.lang===l[0]?"sel":""}" data-lang="${l[0]}" ${l[1]!=="Available"?"disabled":""}>${l[0]} · ${l[1]}</button>`).join("")}</div><p class="note">Other planned languages appear when their course is complete.</p>`},
+{t:"Your level",b:()=>`<div class="chips">${["Brand new","Beginner","Can order food","Comfortable"].map(l=>`<button class="chip ${state.level===l?"sel":""}" data-level="${l}">${l}</button>`).join("")}</div><p class="note">Not sure? Pick the lowest. Chase adjusts after your first drills.</p>`},
+{t:"What for?",b:()=>`<div class="chips">${["Travel","Work","Family","Study","Just curious"].map(l=>`<button class="chip ${state.goal===l?"sel":""}" data-goal="${l}">${l}</button>`).join("")}</div><h3>Daily time</h3><div class="chips">${[5,10,15,20].map(m=>`<button class="chip ${state.mins===m?"sel":""}" data-mins="${m}">${m} min</button>`).join("")}</div>`},
+{t:"Your first week",b:()=>`<div class="card"><b>${state.lang} · ${state.level} · ${state.goal}</b><p class="note">${state.mins} minutes a day. Day 1: Order at the butcher's (rehearsal → 3 speaking drills → mission in Chase World).</p></div><p class="note">Region & formats, phone and your explorer are chosen later in Settings: nothing is blocked on them.</p><a class="btn pri" href="#/today" style="margin-top:10px">Begin day 1</a>`}];
+function onb(){const s=STEPS[state.step];return pub()+`<div class="onb stepc" id="ob"><div class="note">Step ${state.step+1} of ${STEPS.length}</div><div class="bar"><i style="width:${(state.step+1)/STEPS.length*100}%"></i></div><h2>${s.t}</h2>${s.b()}<div style="display:flex;gap:10px;margin-top:22px"><button class="btn" id="bk" ${state.step?"":"disabled"}>Back</button>${state.step<STEPS.length-1?'<button class="btn pri" id="nx">Continue</button>':''}</div></div>`}
+function shell(tab,body){const tabs=[["today","Today"],["learn","Learn"],["practice","Practice"],["explore","Explore"],["progress","Progress"]];return `<div class="shell"><nav class="nav" aria-label="Main">${tabs.map(t=>`<a href="#/${t[0]}" class="${tab===t[0]?"on":""}">${ICON[t[0]]}${t[1]}</a>`).join("")}</nav><div class="main">${body}</div></div>`}
+const head=(t,sub)=>`<div class="hd"><div><h2>${t}</h2><div class="note">${sub||""}</div></div><span class="sp"></span>${themeBtn}<a class="ic" href="#/settings" aria-label="Account and settings" style="display:grid;place-items:center;text-decoration:none"><span style="width:36px;height:36px;border-radius:50%;background:var(--p);color:#fff;display:grid;place-items:center;font-weight:800">R</span></a></div>`;
+const R={
+today:()=>shell("today",head("Today","Sample learner · Spanish")+`<div class="next"><div class="eyebrow" style="color:#e2d6ff">Next step</div><h2 style="margin:0 0 6px">Order at the butcher's</h2><p style="margin:0 0 14px;opacity:.9">Rehearsal · 3 speaking drills · Chase World mission · about 10 min</p><a class="btn" href="#/practice" style="background:#fff;color:#2a1666;border:0">Start</a></div><div class="grid g3" style="margin-top:14px"><div class="card"><div class="ring" style="--v:62"><i>62%</i></div><p class="note">Today's goal (sample)</p></div><div class="card"><b>Streak</b><p class="note">Sample: 4 days. Real streaks come from saved progress.</p></div><div class="card"><b>Review</b><p class="note">6 phrases due · 2 min</p><a href="#/learn">Review</a></div></div>`),
+learn:()=>shell("learn",head("Learn","Units and stories")+`<div class="grid g3">${[["Unit 1 · At the counter","Done 3 / 5",60],["Unit 2 · Getting around","Next",0],["Story · Un día en el mercado","New",0]].map(u=>`<div class="card"><b>${u[0]}</b><div class="bar"><i style="width:${u[2]}%"></i></div><span class="pill">${u[1]}</span></div>`).join("")}</div><h3>Vocabulary</h3><div class="chips">${["un kilo","por favor","¿cuánto cuesta?","la cuenta","gracias"].map(w=>`<button class="chip">${w}</button>`).join("")}</div>`),
+practice:()=>shell("practice",head("Practice","Speak it. Fix one thing.")+`<div class="card" style="text-align:center"><p class="note">Say:</p><h2>«Quisiera un kilo de bistec, por favor.»</h2><button class="mic" id="mic" aria-label="Record (demonstration)">●</button><div class="wave" style="justify-content:center;margin:12px 0" id="wv"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div id="res" class="note">Tap the microphone. This demo does not record or score; it shows the feedback layout.</div></div><div class="grid g3" style="margin-top:14px"><button class="card" style="text-align:left">Shadowing</button><a class="card" href="#/world" style="text-decoration:none;color:inherit">Roleplay in Chase World</a><button class="card" style="text-align:left">Pronunciation <span class="pill">limited</span></button></div>`),
+explore:()=>shell("explore",head("Explore","Real places and real language")+`<div class="grid g4">${[["scenario-cafe-161","Café"],["scenario-supermarket-163","Supermarket"],["scenario-doctor-158","Doctor"],["scenario-work-158","Work"]].map(p=>`<a class="place" href="#/world"><img src="${A}${p[0]}.webp" alt=""><span>${p[1]}</span></a>`).join("")}</div>`),
+progress:()=>shell("progress",head("Progress","Evidence of what you can say")+`<div class="grid g3"><div class="card"><b>Can say</b><p class="note">12 phrases (sample)</p></div><div class="card"><b>Missions</b><p class="note">1 of 2 places (sample)</p></div><div class="card"><b>Speaking</b><p class="note">No scores are invented here.</p></div></div>`),
+settings:()=>shell("today",head("Account & settings","No sixth tab: Account opens from the avatar")+`<div class="card"><b>Language</b><p class="note">Spanish · 1 of 1 (Free)</p></div><div class="card" style="margin-top:10px"><b>Region & formats · Phone · Explorer</b><p class="note">Optional, chosen here, never blocking.</p></div><div class="card" style="margin-top:10px"><b>Plan</b><p class="note">Free. Pro (3 languages) and Premium (11) are proposals only; billing is not active.</p></div>`),
+world:()=>`${pub()}<main class="wrap"><section><div class="eyebrow">Chase World</div><h2>Places that teach</h2><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))"><div class="card"><img src="${A}plate.webp" alt="Café La Plaza environment (existing approved art)" style="width:100%;border-radius:12px"><b>Café La Plaza</b><p class="note">Existing environment art.</p></div><div class="card"><img src="${A}place-supermarket-233.webp" alt="" style="width:100%;border-radius:12px"><b>Supermarket</b><p class="note">Existing environment art.</p></div></div><p class="warn" style="margin-top:16px"><b>Art approval gate (DEC-041/042).</b> The pixel dog and the six standing character masters are NOT approved and are not shown here. This design uses the real Chase portrait for identity. In-game character art is pending founder approval.</p><p><a class="btn pri" href="#/practice">Open practice</a></p></section></main>`};
+function route(){const h=(location.hash||"#/").slice(2)||"";const r=h==="start"?onb:h==="world"?R.world:R[h]||landing;$("#root").innerHTML=(typeof r==="function"?r():r);bind();window.scrollTo(0,0)}
+function bind(){document.querySelectorAll("#th").forEach(b=>b.onclick=()=>{state.theme=state.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=state.theme});
+document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{const g=b.dataset.r==="0";document.querySelectorAll("[data-r]").forEach(x=>x.classList.remove("good","sel"));b.classList.add(g?"good":"sel");$("#fb").textContent=g?"Perfect: polite and clear. Don Nacho weighs your bistec.":"Close: Chase would nudge you toward «Quisiera… por favor.» Try again."});
+const nx=$("#nx"),bk=$("#bk");if(nx)nx.onclick=()=>{state.step++;route()};if(bk)bk.onclick=()=>{if(state.step){state.step--;route()}};
+document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{$("#ofb").textContent=b.dataset.pick==="0"?"Nice. That is exactly how it is said.":"No problem. Every answer is fine here.";});
+for(const[k,a]of[["lang","lang"],["level","level"],["goal","goal"],["mins","mins"]])document.querySelectorAll(`[data-${k}]`).forEach(b=>b.onclick=()=>{state[a]=a==="mins"?+b.dataset[k]:b.dataset[k];route()});
+const mic=$("#mic");if(mic)mic.onclick=()=>{mic.classList.add("rec");$("#wv").classList.add("on");$("#res").textContent="Listening… (demo)";setTimeout(()=>{mic.classList.remove("rec");$("#wv").classList.remove("on");$("#res").innerHTML='<b style="color:var(--ok)">Sample feedback</b> · You said the full sentence. One fix: stretch the «qu» in <i>quisiera</i>. <span class="bad">demo only, not scored</span>'},1600)}}
+addEventListener("hashchange",route);route();
+</script>
+</body>
+</html>
