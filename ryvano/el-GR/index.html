@@ -10,6 +10,7 @@
 <link rel="icon" href="../assets/logo.png">
 <link rel="preload" href="../assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/app.css">
+<link rel="stylesheet" href="../assets/guided.css">
 <script>try{var t=localStorage.getItem("rv.theme");if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="light"}document.documentElement.classList.add("js")</script>
 </head>
 <body>
@@ -23,6 +24,7 @@
 <div class="banner"><div class="wrap" id="banner"></div></div>
 <main>
 <section class="step landing" id="landing"></section>
+<section class="step" id="about"></section>
 <section class="step" id="onboarding" data-d="today"></section>
 <section class="step" id="today" data-d="today"></section>
 <section class="step" id="train" data-d="train"></section>
@@ -32,7 +34,12 @@
 <section class="step" id="avatars" data-d="circle"></section>
 <section class="step" id="support" data-d="recovery"></section>
 <section class="step" id="concepts"></section>
-<section class="step" id="final"></section>
+<section class="step" id="q_areas"></section>
+<section class="step" id="q_confusing"></section>
+<section class="step" id="q_remove"></section>
+<section class="step" id="q_missing"></section>
+<section class="step" id="q_regular"></section>
+<section class="step" id="submit"></section>
 </main>
 <footer><div class="wrap"><p id="foot" style="margin:0 0 12px"></p><button class="btn ghost" id="privbtn" data-act="priv" type="button"></button></div></footer>
 <div id="savebar" hidden><span id="gstatus" role="status" aria-live="polite"></span><button class="btn" id="retry" data-act="retry" hidden type="button"></button></div>
@@ -40,6 +47,7 @@
 <dialog id="langdlg" class="langdlg" aria-labelledby="langtitle"><div class="langhead"><h2 id="langtitle"></h2><button class="btn icon ghost" id="langclose" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="langsearch"><input id="langq" type="search" role="combobox" aria-expanded="true" aria-controls="langlist" aria-autocomplete="list" autocomplete="off" autocapitalize="off" spellcheck="false"></div><ul id="langlist" role="listbox"></ul><p class="langfoot" id="langlegend"></p></dialog>
 <script src="../assets/config.js"></script>
 <script src="../assets/i18n.js"></script>
+<script src="../assets/i18n2.js"></script>
 <script src="../assets/locales.js"></script>
 <script src="../assets/applang.js"></script>
 <script src="../assets/kitnames.js"></script>

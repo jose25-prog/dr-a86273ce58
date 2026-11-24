@@ -1,0 +1,68 @@
+/* RYVANO review v2 copy: guided flow, participant details, closing questions, localized sample data. Merged into I18N (deep). */
+(function () {
+var X = {
+"en": {
+ steps: { about: "About you", q_areas: "Your feedback", q_confusing: "Your feedback", q_remove: "Your feedback", q_missing: "Your feedback", q_regular: "Your feedback", submit: "Send" },
+ train: { savedMsg: "Added to this demo only. Nothing is stored." },
+ money: { savedMsg: "Added to this demo only. Nothing is stored.", items: { market: "Market", bakery: "Bakery", corner: "Corner store", bus: "Bus pass", ride: "Ride", fuel: "Fuel", cinema: "Cinema", coffee: "Coffee", book: "Book", electricity: "Electricity", internet: "Internet", phone: "Phone" }, entriesOf: "Entries" },
+ g: {
+  start: "Start", skip: "Skip", next: "Next", back: "Back", nav: "Main areas", stepn: "{n}/{t}",
+  resumeH: "Welcome back", resumeB: "You stopped at step {n} of {t}. Your answers are still here.", resumeBtn: "Continue", resumeNew: "Start over",
+  sentBefore: "You already sent your answers. Thank you. You can look around again; nothing is sent twice.",
+  toastSaved: "Answers saved", toastBack: "Back online. Answers saved.", toastDeleted: "Your answers were deleted",
+  rate: { u: "How useful would this be for you?", e: "How was this task?", yes: "Useful", no: "Not useful", unsure: "Not sure", easy: "Easy", ok: "Okay", hard: "Difficult", comment: "Add a comment", ph: "Optional. No personal or financial details.", close: "Close" },
+  about: { h: "A little about you", lead: "Everything here is optional. It only helps us understand who is answering. This review is for adults (18+).", nick: "Name or nickname", nickPh: "A nickname is fine", age: "Age range", ages: { a18: "18\u201324", a25: "25\u201334", a35: "35\u201344", a45: "45\u201354", a55: "55 or more", na: "Prefer not to say" }, country: "Country where you live", countryPh: "Choose a country", countrySearch: "Search countries", countryNone: "No country found", lang: "Language", langChange: "Change", ints: "What interests you most?", intsHint: "Pick any", note: "The demo uses a sample user and sample data. No account, no email." },
+  pick: { cat: "Choose a category", ex: "Choose an exercise" },
+  q: { areas: { h: "Which areas would you use most?", hint: "Pick up to 3" }, confusing: { h: "What was confusing?", hint: "Pick any, or none" }, remove: { h: "What would you remove?", hint: "Pick any, or none" }, missing: { h: "What was missing?", hint: "Pick any, or none" }, regular: { h: "Would you use RYVANO regularly?", hint: "Pick one" },
+   nothingC: "Nothing was confusing", nothingR: "Nothing I would remove", nothingM: "Nothing was missing", nav: "Moving around", lang: "Language or translation",
+   m_remind: "Reminders and nudges", m_auto: "Less typing, more automatic", m_share: "Sharing with other people", m_learn: "Learning and guidance", m_lang: "More languages", m_other: "Something else",
+   r_daily: "Every day", r_weekly: "A few times a week", r_some: "Now and then", r_never: "Probably not", r_unsure: "Not sure" },
+  sub: { h: "Ready to send?", lead: "One tap sends your answers. They are recorded once. To change them later, delete them and start again.", comment: "Anything else you want to tell us?", sendBtn: "Send my answers", sending: "Sending\u2026", thanks: "Thank you. Your answers were recorded.", thanksBody: "You can close this page.", already: "These answers were already recorded. Nothing was sent twice.", ref: "Your anonymous reference", del: "Delete my answers and start over", delAsk: "Delete everything you sent from this browser?", delOk: "Your answers were deleted.", err: "We could not send your answers. They are kept here. Try again." },
+  conPick: { h: "Which ideas matter most?", hint: "Pick up to 3. None of these are built yet." }
+ }
+},
+"es-CO": {
+ steps: { about: "Sobre ti", q_areas: "Tu opini\u00f3n", q_confusing: "Tu opini\u00f3n", q_remove: "Tu opini\u00f3n", q_missing: "Tu opini\u00f3n", q_regular: "Tu opini\u00f3n", submit: "Enviar" },
+ train: { savedMsg: "Agregado solo a esta demostraci\u00f3n. No se guarda nada." },
+ money: { savedMsg: "Agregado solo a esta demostraci\u00f3n. No se guarda nada.", items: { market: "Mercado", bakery: "Panader\u00eda", corner: "Tienda de barrio", bus: "Recarga de transporte", ride: "Viaje en taxi", fuel: "Gasolina", cinema: "Cine", coffee: "Tinto", book: "Libro", electricity: "Energ\u00eda", internet: "Internet", phone: "Plan de celular" }, entriesOf: "Movimientos",
+  v: { market: 160000, bakery: 14500, corner: 23000, bus: 60000, ride: 18000, fuel: 70000, cinema: 36000, coffee: 4500, book: 52000, electricity: 120000, internet: 85000, phone: 45000 }, caps: { groceries: 450000, transport: 200000, fun: 120000, bills: 320000 }, def: 12000 },
+ g: {
+  start: "Empezar", skip: "Saltar", next: "Siguiente", back: "Atr\u00e1s", nav: "\u00c1reas principales", stepn: "{n}/{t}",
+  resumeH: "Qu\u00e9 bueno verte de nuevo", resumeB: "Te quedaste en el paso {n} de {t}. Tus respuestas siguen aqu\u00ed.", resumeBtn: "Continuar", resumeNew: "Empezar de nuevo",
+  sentBefore: "Ya enviaste tus respuestas. Gracias. Puedes volver a recorrer la p\u00e1gina; no se env\u00eda nada dos veces.",
+  toastSaved: "Respuestas guardadas", toastBack: "Volvi\u00f3 la conexi\u00f3n. Respuestas guardadas.", toastDeleted: "Tus respuestas fueron borradas",
+  rate: { u: "\u00bfQu\u00e9 tan \u00fatil te ser\u00eda esto?", e: "\u00bfC\u00f3mo te fue con la tarea?", yes: "\u00datil", no: "No es \u00fatil", unsure: "No s\u00e9", easy: "F\u00e1cil", ok: "M\u00e1s o menos", hard: "Dif\u00edcil", comment: "Agregar un comentario", ph: "Opcional. Sin datos personales ni financieros.", close: "Cerrar" },
+  about: { h: "Cu\u00e9ntanos un poco de ti", lead: "Todo es opcional. Solo nos ayuda a entender qui\u00e9n responde. Esta revisi\u00f3n es para personas adultas (18+).", nick: "Nombre o apodo", nickPh: "Con un apodo basta", age: "Rango de edad", ages: { a18: "18\u201324", a25: "25\u201334", a35: "35\u201344", a45: "45\u201354", a55: "55 o m\u00e1s", na: "Prefiero no decirlo" }, country: "Pa\u00eds donde vives", countryPh: "Elige un pa\u00eds", countrySearch: "Buscar pa\u00eds", countryNone: "No encontramos el pa\u00eds", lang: "Idioma", langChange: "Cambiar", ints: "\u00bfQu\u00e9 es lo que m\u00e1s te interesa?", intsHint: "Elige las que quieras", note: "La demostraci\u00f3n usa una persona y datos de ejemplo. Sin cuenta ni correo." },
+  pick: { cat: "Elige una categor\u00eda", ex: "Elige un ejercicio" },
+  q: { areas: { h: "\u00bfQu\u00e9 \u00e1reas usar\u00edas m\u00e1s?", hint: "Elige hasta 3" }, confusing: { h: "\u00bfQu\u00e9 te confundi\u00f3?", hint: "Elige las que quieras, o ninguna" }, remove: { h: "\u00bfQu\u00e9 quitar\u00edas?", hint: "Elige las que quieras, o ninguna" }, missing: { h: "\u00bfQu\u00e9 le falt\u00f3?", hint: "Elige las que quieras, o ninguna" }, regular: { h: "\u00bfUsar\u00edas RYVANO con frecuencia?", hint: "Elige una" },
+   nothingC: "Nada me confundi\u00f3", nothingR: "No quitar\u00eda nada", nothingM: "No falt\u00f3 nada", nav: "Moverme por la app", lang: "Idioma o traducci\u00f3n",
+   m_remind: "Recordatorios y avisos", m_auto: "Menos digitar, m\u00e1s autom\u00e1tico", m_share: "Compartir con otras personas", m_learn: "Aprender y recibir gu\u00eda", m_lang: "M\u00e1s idiomas", m_other: "Otra cosa",
+   r_daily: "Todos los d\u00edas", r_weekly: "Varias veces por semana", r_some: "De vez en cuando", r_never: "Probablemente no", r_unsure: "No s\u00e9" },
+  sub: { h: "\u00bfListo para enviar?", lead: "Con un toque se env\u00edan tus respuestas y quedan registradas una sola vez. Para cambiarlas despu\u00e9s, b\u00f3rralas y empieza de nuevo.", comment: "\u00bfAlgo m\u00e1s que quieras contarnos?", sendBtn: "Enviar mis respuestas", sending: "Enviando\u2026", thanks: "Gracias. Tus respuestas quedaron registradas.", thanksBody: "Puedes cerrar esta p\u00e1gina.", already: "Estas respuestas ya estaban registradas. No se envi\u00f3 nada dos veces.", ref: "Tu referencia an\u00f3nima", del: "Borrar mis respuestas y empezar de nuevo", delAsk: "\u00bfBorrar todo lo que enviaste desde este navegador?", delOk: "Tus respuestas fueron borradas.", err: "No pudimos enviar tus respuestas. Siguen guardadas aqu\u00ed. Intenta otra vez." },
+  conPick: { h: "\u00bfQu\u00e9 ideas te importan m\u00e1s?", hint: "Elige hasta 3. Ninguna est\u00e1 construida todav\u00eda." }
+ }
+},
+"pt-BR": {
+ steps: { about: "Sobre voc\u00ea", q_areas: "Sua opini\u00e3o", q_confusing: "Sua opini\u00e3o", q_remove: "Sua opini\u00e3o", q_missing: "Sua opini\u00e3o", q_regular: "Sua opini\u00e3o", submit: "Enviar" },
+ train: { savedMsg: "Adicionado s\u00f3 a esta demonstra\u00e7\u00e3o. Nada \u00e9 guardado." },
+ money: { savedMsg: "Adicionado s\u00f3 a esta demonstra\u00e7\u00e3o. Nada \u00e9 guardado.", items: { market: "Supermercado", bakery: "Padaria", corner: "Mercadinho", bus: "Bilhete de transporte", ride: "Corrida de app", fuel: "Combust\u00edvel", cinema: "Cinema", coffee: "Caf\u00e9", book: "Livro", electricity: "Energia", internet: "Internet", phone: "Plano de celular" }, entriesOf: "Lan\u00e7amentos",
+  v: { market: 220, bakery: 28, corner: 45, bus: 150, ride: 32, fuel: 160, cinema: 60, coffee: 8, book: 55, electricity: 180, internet: 100, phone: 60 }, caps: { groceries: 600, transport: 500, fun: 250, bills: 500 }, def: 25 },
+ g: {
+  start: "Come\u00e7ar", skip: "Pular", next: "Pr\u00f3ximo", back: "Voltar", nav: "\u00c1reas principais", stepn: "{n}/{t}",
+  resumeH: "Que bom ver voc\u00ea de novo", resumeB: "Voc\u00ea parou na etapa {n} de {t}. Suas respostas continuam aqui.", resumeBtn: "Continuar", resumeNew: "Come\u00e7ar de novo",
+  sentBefore: "Voc\u00ea j\u00e1 enviou suas respostas. Obrigado. Pode explorar de novo; nada \u00e9 enviado duas vezes.",
+  toastSaved: "Respostas salvas", toastBack: "A conex\u00e3o voltou. Respostas salvas.", toastDeleted: "Suas respostas foram apagadas",
+  rate: { u: "Qu\u00e3o \u00fatil isso seria para voc\u00ea?", e: "Como foi a tarefa?", yes: "\u00datil", no: "N\u00e3o \u00e9 \u00fatil", unsure: "N\u00e3o sei", easy: "F\u00e1cil", ok: "Mais ou menos", hard: "Dif\u00edcil", comment: "Adicionar um coment\u00e1rio", ph: "Opcional. Sem dados pessoais ou financeiros.", close: "Fechar" },
+  about: { h: "Conte um pouco sobre voc\u00ea", lead: "Tudo aqui \u00e9 opcional. S\u00f3 nos ajuda a entender quem est\u00e1 respondendo. Esta revis\u00e3o \u00e9 para adultos (18+).", nick: "Nome ou apelido", nickPh: "Um apelido basta", age: "Faixa et\u00e1ria", ages: { a18: "18\u201324", a25: "25\u201334", a35: "35\u201344", a45: "45\u201354", a55: "55 ou mais", na: "Prefiro n\u00e3o dizer" }, country: "Pa\u00eds onde voc\u00ea mora", countryPh: "Escolha um pa\u00eds", countrySearch: "Buscar pa\u00eds", countryNone: "Nenhum pa\u00eds encontrado", lang: "Idioma", langChange: "Alterar", ints: "O que mais interessa a voc\u00ea?", intsHint: "Escolha quantas quiser", note: "A demonstra\u00e7\u00e3o usa uma pessoa e dados de exemplo. Sem conta, sem e-mail." },
+  pick: { cat: "Escolha uma categoria", ex: "Escolha um exerc\u00edcio" },
+  q: { areas: { h: "Quais \u00e1reas voc\u00ea mais usaria?", hint: "Escolha at\u00e9 3" }, confusing: { h: "O que foi confuso?", hint: "Escolha quantas quiser, ou nenhuma" }, remove: { h: "O que voc\u00ea tiraria?", hint: "Escolha quantas quiser, ou nenhuma" }, missing: { h: "O que faltou?", hint: "Escolha quantas quiser, ou nenhuma" }, regular: { h: "Voc\u00ea usaria o RYVANO com frequ\u00eancia?", hint: "Escolha uma" },
+   nothingC: "Nada foi confuso", nothingR: "N\u00e3o tiraria nada", nothingM: "N\u00e3o faltou nada", nav: "Navegar pelo app", lang: "Idioma ou tradu\u00e7\u00e3o",
+   m_remind: "Lembretes e avisos", m_auto: "Menos digita\u00e7\u00e3o, mais autom\u00e1tico", m_share: "Compartilhar com outras pessoas", m_learn: "Aprender e receber orienta\u00e7\u00e3o", m_lang: "Mais idiomas", m_other: "Outra coisa",
+   r_daily: "Todos os dias", r_weekly: "Algumas vezes por semana", r_some: "De vez em quando", r_never: "Provavelmente n\u00e3o", r_unsure: "N\u00e3o sei" },
+  sub: { h: "Pronto para enviar?", lead: "Um toque envia suas respostas e elas s\u00e3o registradas uma \u00fanica vez. Para mudar depois, apague e comece de novo.", comment: "Quer contar mais alguma coisa?", sendBtn: "Enviar minhas respostas", sending: "Enviando\u2026", thanks: "Obrigado. Suas respostas foram registradas.", thanksBody: "Voc\u00ea pode fechar esta p\u00e1gina.", already: "Estas respostas j\u00e1 estavam registradas. Nada foi enviado duas vezes.", ref: "Sua refer\u00eancia an\u00f4nima", del: "Apagar minhas respostas e come\u00e7ar de novo", delAsk: "Apagar tudo o que voc\u00ea enviou deste navegador?", delOk: "Suas respostas foram apagadas.", err: "N\u00e3o conseguimos enviar suas respostas. Elas continuam guardadas aqui. Tente de novo." },
+  conPick: { h: "Quais ideias mais importam?", hint: "Escolha at\u00e9 3. Nenhuma delas existe ainda." }
+ }
+}};
+function merge(a, b) { Object.keys(b).forEach(function (k) { var v = b[k]; if (v && typeof v === "object" && !Array.isArray(v) && a[k] && typeof a[k] === "object") merge(a[k], v); else a[k] = v; }); }
+Object.keys(X).forEach(function (k) { merge(window.I18N[k], X[k]); });
+})();
