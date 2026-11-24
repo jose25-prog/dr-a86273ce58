@@ -6,7 +6,16 @@ var VER = "2026-11-24.1";
 var LANG = document.documentElement.dataset.lang;
 var REG = window.LOCALES_REG.filter(function (r) { return r.code === LANG; })[0];
 var APP = (window.APPLANG && window.APPLANG[LANG]) || {};
-var FULL = !!window.I18N[LANG];
+var PACK = window.PACKS && window.PACKS[LANG];
+var FULL = !!window.I18N[LANG] || !!PACK;
+/* sample-amount currency per language (display only; sample records are labelled as such) */
+var FMT = { "id-ID": ["IDR", 16000], "da-DK": ["DKK", 7], "de-DE": ["EUR", .92], "fr-FR": ["EUR", .92], "it-IT": ["EUR", .92], "nl-NL": ["EUR", .92], "fi-FI": ["EUR", .92], "el-GR": ["EUR", .92], "hr-HR": ["EUR", .92], "bg-BG": ["EUR", .92], "hu-HU": ["HUF", 360], "nb-NO": ["NOK", 10.5], "pl-PL": ["PLN", 4], "ro-RO": ["RON", 4.6], "sv-SE": ["SEK", 10], "vi-VN": ["VND", 25000], "tr-TR": ["TRY", 34], "cs-CZ": ["CZK", 23], "ru-RU": ["RUB", 90], "uk-UA": ["UAH", 41], "hi-IN": ["INR", 84], "th-TH": ["THB", 35], "zh-CN": ["CNY", 7.2], "ja-JP": ["JPY", 150], "ar-SA": ["SAR", 3.75], "he-IL": ["ILS", 3.7], "sr-RS": ["RSD", 105], "sr-Latn-RS": ["RSD", 105], "ko-KR": ["KRW", 1350], "zh-TW": ["TWD", 32] };
+function setPath(o, path, v) { var p = path.split("."), c = o; for (var i = 0; i < p.length - 1; i++) { c = c[p[i]]; if (c == null) return; } c[p[p.length - 1]] = v; }
+function fromPack() {
+  var t = JSON.parse(JSON.stringify(window.I18N.en)); Object.keys(PACK).forEach(function (k) { if (!/^(kit|look)\./.test(k)) setPath(t, k, PACK[k]); });
+  var m = FMT[LANG] || ["USD", 1]; t._name = REG.endonym; t._fmt = REG.app; t._cur = m[0]; t._rate = m[1]; return t;
+}
+function nice(n) { var m = Math.pow(10, Math.max(0, Math.floor(Math.log(n) / Math.LN10) - 1)); return Math.round(n / m) * m; }
 /* A language the review text is not translated into: RYVANO's own interface words (from the app's dictionaries) are used
    where this page shows them; everything else stays English and the page says so. Nothing is machine-translated here. */
 function partial() {
@@ -23,11 +32,15 @@ function partial() {
   t.reviewBanner = t.reviewBanner + " Test text is not translated into " + REG.endonym + " yet: RYVANO's own words are, the questions are in English.";
   return t;
 }
-var T = FULL ? window.I18N[LANG] : partial();
+var T = window.I18N[LANG] ? window.I18N[LANG] : PACK ? fromPack() : partial();
+if (PACK) { var kn0 = {}; Object.keys(PACK).forEach(function (k) { var m = /^kit\.([^.]+)\.(.+)$/.exec(k); if (m) (kn0[m[1]] = kn0[m[1]] || {})[m[2]] = PACK[k]; }); window.KITNAMES = window.KITNAMES || {}; window.KITNAMES[LANG] = kn0; }
+function lookName(id, dflt) { return (PACK && PACK["look." + id]) || dflt; }
+/* weekday names come from the browser's locale data in every language */
+if (!T._partial) { try { var wl = REG.app === "en-US" ? "en" : REG.app, wn = new Intl.DateTimeFormat(wl, { weekday: "narrow" }), wf = new Intl.DateTimeFormat(wl, { weekday: "long" }), wd = []; for (var wi = 0; wi < 7; wi++) wd.push(wn.format(new Date(2026, 0, 5 + wi))); T.train.days = wd; var tue = wf.format(new Date(2026, 0, 6)); T.today.day = tue.charAt(0).toLocaleUpperCase(wl) + tue.slice(1); } catch (e) { } }
 var G18 = T.g;
 var QA = /[?&]qa=1\b/.test(location.search);
 /* review access: this review is private until the founder opens it. The access code arrives in the link (?k=) and is remembered; without it the server records nothing. */
-var RC = (function () { var m = /[?&]k=([A-Za-z0-9]{8,64})/.exec(location.search); try { if (m) { localStorage.setItem("rv.k", m[1]); return m[1]; } return localStorage.getItem("rv.k") || ""; } catch (e) { return m ? m[1] : ""; } })();
+var RC = (function () { var m = /[?&]k=([A-Za-z0-9]{8,64})/.exec(location.search); try { if (m) { localStorage.setItem("rv.k", m[1]); if (localStorage.getItem("rv.k") === m[1]) { try { var u = new URL(location.href); u.searchParams.delete("k"); history.replaceState(null, "", u.pathname + u.search + u.hash); } catch (e) { } } return m[1]; } return localStorage.getItem("rv.k") || ""; } catch (e) { return m ? m[1] : ""; } })();
 var CLOSED = false;
 var FLOW = ["landing", "about", "q_first", "onboarding", "today", "train", "food", "money", "circle", "avatars", "support", "concepts", "q_areas", "q_confusing", "q_remove", "q_missing", "q_apps", "q_barriers", "q_regular", "q_pay", "submit"];
 var STEPS = FLOW;
@@ -112,10 +125,10 @@ var CATS = ["groceries", "transport", "fun", "bills"];
 var ITEMS = { groceries: ["market", "bakery", "corner"], transport: ["bus", "ride", "fuel"], fun: ["cinema", "coffee", "book"], bills: ["electricity", "internet", "phone"] };
 var ENV = { market: 48, bakery: 12, corner: 31, bus: 40, ride: 14, fuel: 17, cinema: 22, coffee: 6, book: 18, electricity: 64, internet: 38, phone: 22 };
 var ENCAP = { groceries: 150, transport: 80, fun: 70, bills: 160 };
-function val(k) { var v = T.money.v; return v && v[k] != null ? v[k] : ENV[k]; }
-function cap(c) { var v = T.money.caps; return v && v[c] != null ? v[c] : ENCAP[c]; }
+function val(k) { var v = T.money.v; return v && v[k] != null ? v[k] : nice(ENV[k] * (T._rate || 1)); }
+function cap(c) { var v = T.money.caps; return v && v[c] != null ? v[c] : nice(ENCAP[c] * (T._rate || 1)); }
 function catSpent(c) { return ITEMS[c].reduce(function (s, k) { return s + val(k); }, 0) + D.expenses.filter(function (e) { return e.c === c; }).reduce(function (s, e) { return s + e.a; }, 0); }
-function qdef() { return T.money.def || 12; }
+function qdef() { return T.money.def || nice(12 * (T._rate || 1)); }
 var MEALS = [["m1", "i1", 25], ["m2", "i2", 35], ["m3", "i3", 10], ["m4", "i4", 15]];
 
 function task(id, text) {
@@ -299,7 +312,7 @@ var AVTOK = 0;
 function avInit() { var K = window.RVKit; if (!K) { $("#avui").innerHTML = '<p role="alert">' + esc(T.av.loadFail) + '</p>'; return; } D.av = { origin: "vela", state: JSON.parse(JSON.stringify(K.KIT_PRESET_STATE.vela)), touched: false }; renderAv(); drawAv(); }
 function renderAv() {
   var K = window.RVKit, A = D.av, a = T.av, base = "../assets/avatars/exports/128/";
-  var h = '<div class="avwrap"><div><img class="avimg" id="avimg" alt="" width="200" height="200"><p class="status" id="avst" role="status"></p><button class="btn" data-act="avreset" style="width:100%">' + esc(a.reset) + '</button></div><div class="cats"><div><h3>' + esc(a.looks) + '</h3><div class="looks">' + K.AVATAR_PRESET_IDS.map(function (id) { return '<button class="look" data-fid="look-' + id + '" data-act="look" data-id="' + id + '" aria-pressed="' + (A.origin === id) + '" aria-label="' + esc(K.AVATAR_PRESET_NAMES[id]) + '"><img src="' + base + id + '.png" alt="" width="64" height="64"></button>'; }).join("") + '</div></div><h3 style="margin:0">' + esc(a.path1) + '</h3>';
+  var h = '<div class="avwrap"><div><img class="avimg" id="avimg" alt="" width="200" height="200"><p class="status" id="avst" role="status"></p><button class="btn" data-act="avreset" style="width:100%">' + esc(a.reset) + '</button></div><div class="cats"><div><h3>' + esc(a.looks) + '</h3><div class="looks">' + K.AVATAR_PRESET_IDS.map(function (id) { return '<button class="look" data-fid="look-' + id + '" data-act="look" data-id="' + id + '" aria-pressed="' + (A.origin === id) + '" aria-label="' + esc(lookName(id, K.AVATAR_PRESET_NAMES[id])) + '"><img src="' + base + id + '.png" alt="" width="64" height="64"></button>'; }).join("") + '</div></div><h3 style="margin:0">' + esc(a.path1) + '</h3>';
   K.KIT_CATEGORIES.forEach(function (c) {
     var pal = c === "skin" || c === "hairColor" || c === "eyeColor", val0 = A.state[c];
     h += '<div><h3 id="cl-' + c + '">' + esc(a.cat[c]) + '</h3><div class="sw-row" role="group" aria-labelledby="cl-' + c + '">' + K.KIT_OPTIONS[c].map(function (o) { return pal ? '<button class="swatch" data-fid="o-' + c + '-' + o.id + '" data-act="opt" data-c="' + c + '" data-v="' + o.id + '" style="background:' + o.hex + '" aria-pressed="' + (val0 === o.id) + '" aria-label="' + esc(kn(c, o)) + '" title="' + esc(kn(c, o)) + '"></button>' : '<button class="opt" data-fid="o-' + c + '-' + o.id + '" data-act="opt" data-c="' + c + '" data-v="' + o.id + '" aria-pressed="' + (val0 === o.id) + '">' + esc(kn(c, o)) + '</button>'; }).join("") + '</div></div>';
@@ -319,7 +332,7 @@ function handlePhoto(src, w, h) {
   if (!s.skin && !s.hair) { pres.innerHTML = '<p>' + esc(T.av.noFace) + '</p>'; return; }
   K.closestLooks(s).then(function (ids) {
     var ns = K.nearestKitColor("skin", s.skin), nh = K.nearestKitColor("hairColor", s.hair); D.photoPick = { skin: ns && ns.id, hair: nh && nh.id };
-    pres.innerHTML = '<h3>' + esc(T.av.closest) + '</h3><div class="closest">' + ids.map(function (id) { return '<button class="look" data-fid="cl3-' + id + '" data-act="pick" data-id="' + id + '" aria-label="' + esc(K.AVATAR_PRESET_NAMES[id]) + '"><img src="../assets/avatars/exports/128/' + id + '.png" alt=""></button>'; }).join("") + '</div><p class="samplenote">' + esc(T.av.photoNote) + '</p>';
+    pres.innerHTML = '<h3>' + esc(T.av.closest) + '</h3><div class="closest">' + ids.map(function (id) { return '<button class="look" data-fid="cl3-' + id + '" data-act="pick" data-id="' + id + '" aria-label="' + esc(lookName(id, K.AVATAR_PRESET_NAMES[id])) + '"><img src="../assets/avatars/exports/128/' + id + '.png" alt=""></button>'; }).join("") + '</div><p class="samplenote">' + esc(T.av.photoNote) + '</p>';
   });
   S.photo = "tried"; save();
 }
