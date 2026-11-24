@@ -8,7 +8,7 @@ var X = {
  train: { savedMsg: "Added to this demo only. Nothing is stored." },
  money: { savedMsg: "Added to this demo only. Nothing is stored.", items: { market: "Market", bakery: "Bakery", corner: "Corner store", bus: "Bus pass", ride: "Ride", fuel: "Fuel", cinema: "Cinema", coffee: "Coffee", book: "Book", electricity: "Electricity", internet: "Internet", phone: "Phone" }, entriesOf: "Entries" },
  g: {
-  demo: "Demo", demoTitle: "Demonstration with sample data, not the real app", demoNote: "This is a demonstration made for testing, not the real RYVANO app. Everything in it is sample data.", partial: { h: "Not fully translated", b: "This review is fully translated only into English, Espa\u00f1ol and Portugu\u00eas. In {lang} you see RYVANO's own words, but the questions and explanations stay in English." },
+  closed: "This review is not open to the public yet. You can look around, but your answers are not being recorded.", demo: "Demo", demoTitle: "Demonstration with sample data, not the real app", demoNote: "This is a demonstration made for testing, not the real RYVANO app. Everything in it is sample data.", partial: { h: "Not fully translated", b: "This review is fully translated only into English, Espa\u00f1ol and Portugu\u00eas. In {lang} you see RYVANO's own words, but the questions and explanations stay in English." },
   start: "Start", skip: "Skip", next: "Next", back: "Back", nav: "Main areas", stepn: "{n}/{t}",
   resumeH: "Welcome back", resumeB: "You stopped at step {n} of {t}. Your answers are still here.", resumeBtn: "Continue", resumeNew: "Start over",
   sentBefore: "You already sent your answers. Thank you. You can look around again; nothing is sent twice.",
@@ -32,7 +32,7 @@ var X = {
  money: { savedMsg: "Agregado solo a esta demostraci\u00f3n. No se guarda nada.", items: { market: "Mercado", bakery: "Panader\u00eda", corner: "Tienda de barrio", bus: "Recarga de transporte", ride: "Viaje en taxi", fuel: "Gasolina", cinema: "Cine", coffee: "Tinto", book: "Libro", electricity: "Energ\u00eda", internet: "Internet", phone: "Plan de celular" }, entriesOf: "Movimientos",
   v: { market: 160000, bakery: 14500, corner: 23000, bus: 60000, ride: 18000, fuel: 70000, cinema: 36000, coffee: 4500, book: 52000, electricity: 120000, internet: 85000, phone: 45000 }, caps: { groceries: 450000, transport: 200000, fun: 120000, bills: 320000 }, def: 12000 },
  g: {
-  demo: "Demo", demoTitle: "Demostraci\u00f3n con datos de ejemplo, no la app real", demoNote: "Esto es una demostraci\u00f3n hecha para probar, no la app real de RYVANO. Todo lo que ves son datos de ejemplo.",
+  closed: "Esta revisi\u00f3n todav\u00eda no est\u00e1 abierta al p\u00fablico. Puedes recorrerla, pero tus respuestas no se est\u00e1n registrando.", demo: "Demo", demoTitle: "Demostraci\u00f3n con datos de ejemplo, no la app real", demoNote: "Esto es una demostraci\u00f3n hecha para probar, no la app real de RYVANO. Todo lo que ves son datos de ejemplo.",
   start: "Empezar", skip: "Saltar", next: "Siguiente", back: "Atr\u00e1s", nav: "\u00c1reas principales", stepn: "{n}/{t}",
   resumeH: "Qu\u00e9 bueno verte de nuevo", resumeB: "Te quedaste en el paso {n} de {t}. Tus respuestas siguen aqu\u00ed.", resumeBtn: "Continuar", resumeNew: "Empezar de nuevo",
   sentBefore: "Ya enviaste tus respuestas. Gracias. Puedes volver a recorrer la p\u00e1gina; no se env\u00eda nada dos veces.",
@@ -56,7 +56,7 @@ var X = {
  money: { savedMsg: "Adicionado s\u00f3 a esta demonstra\u00e7\u00e3o. Nada \u00e9 guardado.", items: { market: "Supermercado", bakery: "Padaria", corner: "Mercadinho", bus: "Bilhete de transporte", ride: "Corrida de app", fuel: "Combust\u00edvel", cinema: "Cinema", coffee: "Caf\u00e9", book: "Livro", electricity: "Energia", internet: "Internet", phone: "Plano de celular" }, entriesOf: "Lan\u00e7amentos",
   v: { market: 220, bakery: 28, corner: 45, bus: 150, ride: 32, fuel: 160, cinema: 60, coffee: 8, book: 55, electricity: 180, internet: 100, phone: 60 }, caps: { groceries: 600, transport: 500, fun: 250, bills: 500 }, def: 25 },
  g: {
-  demo: "Demo", demoTitle: "Demonstra\u00e7\u00e3o com dados de exemplo, n\u00e3o o app de verdade", demoNote: "Esta \u00e9 uma demonstra\u00e7\u00e3o feita para teste, n\u00e3o o app real do RYVANO. Tudo aqui s\u00e3o dados de exemplo.",
+  closed: "Esta revis\u00e3o ainda n\u00e3o est\u00e1 aberta ao p\u00fablico. Voc\u00ea pode explorar, mas as suas respostas n\u00e3o est\u00e3o sendo registradas.", demo: "Demo", demoTitle: "Demonstra\u00e7\u00e3o com dados de exemplo, n\u00e3o o app de verdade", demoNote: "Esta \u00e9 uma demonstra\u00e7\u00e3o feita para teste, n\u00e3o o app real do RYVANO. Tudo aqui s\u00e3o dados de exemplo.",
   start: "Come\u00e7ar", skip: "Pular", next: "Pr\u00f3ximo", back: "Voltar", nav: "\u00c1reas principais", stepn: "{n}/{t}",
   resumeH: "Que bom ver voc\u00ea de novo", resumeB: "Voc\u00ea parou na etapa {n} de {t}. Suas respostas continuam aqui.", resumeBtn: "Continuar", resumeNew: "Come\u00e7ar de novo",
   sentBefore: "Voc\u00ea j\u00e1 enviou suas respostas. Obrigado. Pode explorar de novo; nada \u00e9 enviado duas vezes.",

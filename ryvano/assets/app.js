@@ -26,6 +26,9 @@ function partial() {
 var T = FULL ? window.I18N[LANG] : partial();
 var G18 = T.g;
 var QA = /[?&]qa=1\b/.test(location.search);
+/* review access: this review is private until the founder opens it. The access code arrives in the link (?k=) and is remembered; without it the server records nothing. */
+var RC = (function () { var m = /[?&]k=([A-Za-z0-9]{8,64})/.exec(location.search); try { if (m) { localStorage.setItem("rv.k", m[1]); return m[1]; } return localStorage.getItem("rv.k") || ""; } catch (e) { return m ? m[1] : ""; } })();
+var CLOSED = false;
 var FLOW = ["landing", "about", "onboarding", "today", "train", "food", "money", "circle", "avatars", "support", "concepts", "q_areas", "q_confusing", "q_remove", "q_missing", "q_regular", "submit"];
 var STEPS = FLOW;
 var DEST = ["today", "train", "food", "money", "circle"];
@@ -61,7 +64,7 @@ if (!S.sid) S.sid = ls("rv.sid") || rid();
 ls("rv.sid", S.sid);
 var T0 = Date.now(), taskStart = {};
 function vp() { var w = window.innerWidth; return w < 700 ? "phone" : w < 1100 ? "tablet" : "desktop"; }
-function payload() { return { sid: S.sid, ver: VER, lang: LANG, vp: vp(), test: QA, complete: !!S.complete, reached: S.reached, fb: S.fb, tasks: S.tasks, concepts: S.concepts, final: S.final, profile: S.profile, photo: S.photo, ms: Date.now() - T0 }; }
+function payload() { return { rc: RC, sid: S.sid, ver: VER, lang: LANG, vp: vp(), test: QA, complete: !!S.complete, reached: S.reached, fb: S.fb, tasks: S.tasks, concepts: S.concepts, final: S.final, profile: S.profile, photo: S.photo, ms: Date.now() - T0 }; }
 
 /* ---------- saving with retry; the server is idempotent by session id and records a completed submission once ---------- */
 var gstatus = $("#gstatus"), timer = null, inflight = false, dirty = false, retryN = 0, retryT = null, wasFailing = false;
@@ -80,14 +83,16 @@ function meaningful() {
   return !!(P.nick || P.age || P.country || P.interests.length || F.areas.length || F.confusing.length || F.remove.length || F.missing.length || F.regular || F.note || S.photo !== "none" || Object.keys(S.tasks).length ||
     Object.keys(S.fb).some(function (k) { var x = S.fb[k]; return x && (x.useful || x.ease || x.note); }) || Object.keys(S.concepts).some(function (k) { var x = S.concepts[k]; return x && x.useful; }));
 }
-function save(immediate) { saveLocal(); if (S.complete || !meaningful()) return; dirty = true; clearTimeout(timer); timer = setTimeout(flush, immediate ? 0 : 900); }
-function post(p) { return fetch(API, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(p) }).then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.ok) throw new Error(j.error || r.status); return j; }); }); }
+function save(immediate) { saveLocal(); if (S.complete || CLOSED || !meaningful()) return; dirty = true; clearTimeout(timer); timer = setTimeout(flush, immediate ? 0 : 900); }
+function setClosed() { CLOSED = true; dirty = false; clearTimeout(timer); clearTimeout(retryT); document.body.classList.add("closed"); var b = $("#banner"); if (b) b.textContent = G18.closed; var sb = $("#savebar"); if (sb) sb.hidden = true; if ($("#subcard")) renderSubmit(); }
+function post(p) { return fetch(API, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(p) }).then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.ok) { if (j && j.error === "closed") setClosed(); throw new Error(j.error || r.status); } return j; }); }); }
+if (!RC) { fetch(window.RV_CFG.api + "/api/health").then(function (r) { return r.json(); }).then(function (j) { if (j && j.open === false) setClosed(); }).catch(function () { }); }
 function flush() {
   if (inflight || !dirty || S.complete) return;
   if (navigator.onLine === false) { setStatus("offline"); return; }
   inflight = true; dirty = false;
   return post(payload()).then(function () { inflight = false; retryN = 0; setStatus("saved"); if (dirty) flush(); return true; }).catch(function () {
-    inflight = false; dirty = true; setStatus("fail"); retryN++; clearTimeout(retryT); retryT = setTimeout(flush, Math.min(60000, 3000 * Math.pow(2, retryN - 1))); return false;
+    inflight = false; if (CLOSED) { dirty = false; return false; } dirty = true; setStatus("fail"); retryN++; clearTimeout(retryT); retryT = setTimeout(flush, Math.min(60000, 3000 * Math.pow(2, retryN - 1))); return false;
   });
 }
 window.addEventListener("online", function () { if (dirty) flush(); });
@@ -356,6 +361,7 @@ function renderSubmit() {
     el.innerHTML = '<div class="thanks card"><div class="check" style="width:40px;height:40px;border-radius:50%;background:var(--positive);color:#fff;display:grid;place-items:center">' + ICON.check + '</div><b>' + esc(s.thanks) + '</b><p style="margin:0">' + esc(G.kept ? s.already : s.thanksBody) + '</p><p class="samplenote">' + esc(s.ref) + ': <code>' + esc(S.sid.slice(0, 8)) + '</code></p><div class="row"><button class="btn ghost" type="button" data-act="del">' + esc(s.del) + '</button></div></div>';
     return;
   }
+  if (CLOSED) { el.innerHTML = '<div class="resume" role="status"><p>' + esc(G18.closed) + '</p></div>'; return; }
   el.innerHTML = '<div class="field"><label for="f-note">' + esc(s.comment) + ' <span class="badge">' + esc(T.optional) + '</span></label><textarea id="f-note" data-act="fin" maxlength="800" placeholder="' + esc(G18.rate.ph) + '">' + esc(S.final.note || "") + '</textarea></div><button class="btn primary" id="send" data-act="send" type="button">' + esc(s.sendBtn) + '</button><div id="fout" role="status" aria-live="polite"></div>';
 }
 
@@ -577,8 +583,8 @@ function sendFinal() {
 }
 function delAll() {
   var s = G18.sub; if (!confirm(s.delAsk)) return;
-  fetch(DEL, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ sid: S.sid }) }).then(function (r) { return r.json(); }).then(function (j) {
-    if (j.ok) { ls("rv.draft", null); ls("rv.sid", null); S = blank(); S.sid = rid(); ls("rv.sid", S.sid); dirty = false; setStatus(""); document.body.classList.remove("sent"); if ($("#privdlg").open) $("#privdlg").close(); Object.keys(QCFG).forEach(renderQ); renderAbout(); renderCon(); renderSubmit(); renderResume(); go(0); toast(G18.toastDeleted); }
+  fetch(DEL, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ sid: S.sid, rc: RC }) }).then(function (r) { return r.json(); }).then(function (j) {
+    if (j.ok || (j && j.error === "closed")) { ls("rv.draft", null); ls("rv.sid", null); S = blank(); S.sid = rid(); ls("rv.sid", S.sid); dirty = false; setStatus(""); document.body.classList.remove("sent"); if ($("#privdlg").open) $("#privdlg").close(); Object.keys(QCFG).forEach(renderQ); renderAbout(); renderCon(); renderSubmit(); renderResume(); go(0); toast(G18.toastDeleted); }
   }).catch(function () { toast(s.err); });
 }
 function themeBtn() { var b = $("#theme"); if (!b) return; var dk = document.documentElement.dataset.theme === "dark"; b.innerHTML = dk ? ICON.sun : ICON.moon; b.setAttribute("aria-label", T.themeLabel); b.title = T.themeLabel; }

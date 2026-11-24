@@ -158,3 +158,6 @@ body.g main{overflow-x:clip}
 .top .nav a{flex:1 1 auto;min-width:0}
 .top .nav a span{white-space:nowrap;overflow-wrap:normal;hyphens:manual}
 @media(max-width:340px){.top .nav a{font-size:10px}.top .nav a span{white-space:normal;overflow-wrap:anywhere}}
+
+body.closed .banner{display:block!important;background:var(--caution-tint);border-bottom-color:var(--caution-line)}
+body.closed #send{display:none}
