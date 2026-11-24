@@ -8,34 +8,41 @@
 <meta name="referrer" content="no-referrer">
 <title>RYVANO</title>
 <link rel="icon" href="../assets/logo.png">
+<link rel="preload" href="../assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/app.css">
+<script>try{var t=localStorage.getItem("rv.theme");if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="light"}document.documentElement.classList.add("js")</script>
 </head>
 <body>
 <a class="skip" href="#landing" id="skiplink"></a>
 <header class="top"><div class="wrap">
-<a class="brand" href="#landing"><img src="../assets/logo.png" alt="" width="32" height="32">RYVANO</a>
+<a class="brand" href="#landing" aria-label="RYVANO"><img src="../assets/logo.png" alt="" width="32" height="32"><span class="wm">RYVANO</span></a>
 <span class="sp"></span>
-<nav class="langs" aria-labelledby="langlabel"><span id="langlabel" hidden></span>
-<a data-lang-link="en" href="../en/" lang="en" hreflang="en" aria-current="true">EN</a><a data-lang-link="es-CO" href="../es-CO/" lang="es-CO" hreflang="es-CO">ES</a><a data-lang-link="pt-BR" href="../pt-BR/" lang="pt-BR" hreflang="pt-BR">PT</a></nav>
-</div><div class="wrap"><nav class="stepper" id="stepper"></nav></div></header>
+<button class="btn icon ghost" id="theme" data-act="theme" type="button"></button>
+<button class="btn langbtn" id="langbtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.600 2.700 3.900 5.700 3.900 9s-1.300 6.300-3.900 9c-2.600-2.700-3.900-5.700-3.900-9S9.400 5.700 12 3z"/></svg><span id="langcur"></span></button>
+</div><div class="wrap r2"><nav class="nav" id="stepper"></nav></div><div class="progress" aria-hidden="true"><i id="prog"></i></div></header>
 <div class="banner"><div class="wrap" id="banner"></div></div>
 <main>
 <section class="step landing" id="landing"></section>
-<section class="step" id="onboarding"></section>
-<section class="step" id="today"></section>
-<section class="step" id="train"></section>
-<section class="step" id="food"></section>
-<section class="step" id="money"></section>
-<section class="step" id="circle"></section>
-<section class="step" id="avatars"></section>
-<section class="step" id="support"></section>
+<section class="step" id="onboarding" data-d="today"></section>
+<section class="step" id="today" data-d="today"></section>
+<section class="step" id="train" data-d="train"></section>
+<section class="step" id="food" data-d="food"></section>
+<section class="step" id="money" data-d="money"></section>
+<section class="step" id="circle" data-d="circle"></section>
+<section class="step" id="avatars" data-d="circle"></section>
+<section class="step" id="support" data-d="recovery"></section>
 <section class="step" id="concepts"></section>
 <section class="step" id="final"></section>
 </main>
-<footer><div class="wrap"><p id="foot"></p><button class="btn ghost" id="privbtn" data-act="priv"></button></div></footer>
-<div id="savebar" hidden><span id="gstatus" role="status" aria-live="polite"></span><button class="btn" id="retry" data-act="retry" hidden></button></div>
+<footer><div class="wrap"><p id="foot" style="margin:0 0 12px"></p><button class="btn ghost" id="privbtn" data-act="priv" type="button"></button></div></footer>
+<div id="savebar" hidden><span id="gstatus" role="status" aria-live="polite"></span><button class="btn" id="retry" data-act="retry" hidden type="button"></button></div>
 <dialog id="privdlg" aria-label="Privacy"></dialog>
+<dialog id="langdlg" class="langdlg" aria-labelledby="langtitle"><div class="langhead"><h2 id="langtitle"></h2><button class="btn icon ghost" id="langclose" type="button"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="langsearch"><input id="langq" type="search" role="combobox" aria-expanded="true" aria-controls="langlist" aria-autocomplete="list" autocomplete="off" autocapitalize="off" spellcheck="false"></div><ul id="langlist" role="listbox"></ul><p class="langfoot" id="langlegend"></p></dialog>
+<script src="../assets/config.js"></script>
 <script src="../assets/i18n.js"></script>
+<script src="../assets/locales.js"></script>
+<script src="../assets/applang.js"></script>
+<script src="../assets/kitnames.js"></script>
 <script src="../assets/avatar-kit.js"></script>
 <script src="../assets/app.js"></script>
 </body></html>
