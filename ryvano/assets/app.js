@@ -616,42 +616,19 @@ function reveal() {
   var ro = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); ro.unobserve(en.target); } }); }, { threshold: 0.08, rootMargin: "0px 0px -6% 0px" });
   $$(".rv").forEach(function (e) { ro.observe(e); });
 }
-/* ---------- language picker: every RYVANO interface language, native names, searchable ---------- */
-var LP = { items: [], idx: 0 };
+/* ---------- language selector: the canonical LangSel component (shared with the portal and Chase) ---------- */
 function pickLang(code) {
   ls("rv.lang", code); saveLocal(); if (!S.complete) save(true);
   location.href = "../" + code + "/" + location.search + (G.i > 0 ? "#" + FLOW[G.i] : "");
 }
-function renderLangList() {
-  var q = fold($("#langq").value.trim()), L = $("#langlist");
-  LP.items = window.LOCALES_REG.filter(function (r) { return !q || fold(r.endonym).indexOf(q) >= 0 || fold(r.en).indexOf(q) >= 0 || fold(r.code).indexOf(q) >= 0; });
-  if (LP.idx >= LP.items.length) LP.idx = 0;
-  L.innerHTML = LP.items.length ? LP.items.map(function (r, i) {
-    return '<li role="option" id="lo-' + r.code + '" data-code="' + r.code + '" aria-selected="' + (r.code === LANG) + '"' + (i === LP.idx ? ' class="act"' : "") + ' lang="' + esc(r.app === "en-US" ? "en" : r.app) + '"' + (r.rtl ? ' dir="rtl"' : "") + '><span class="ln">' + esc(r.endonym) + '</span><span class="le">' + esc(r.en) + '</span><span class="ls" title="' + (r.full ? "full" : "partial") + '" aria-hidden="true">' + (r.full ? "&#9679;" : "&#9675;") + '</span></li>';
-  }).join("") : '<li class="none" role="presentation">&mdash;</li>';
-  $("#langq").setAttribute("aria-activedescendant", LP.items[LP.idx] ? "lo-" + LP.items[LP.idx].code : "");
-  var act = $("#langlist .act"); if (act && act.scrollIntoView) act.scrollIntoView({ block: "nearest" });
-}
-function openLang() { var d = $("#langdlg"); $("#langq").value = ""; LP.idx = Math.max(0, window.LOCALES_REG.map(function (r) { return r.code; }).indexOf(LANG)); renderLangList(); d.showModal(); $("#langq").focus(); }
 function initLang() {
   var a = APP, b = $("#langbtn"); if (!b) return;
   $("#langcur").innerHTML = '<span class="lfull">' + esc(REG.endonym) + '</span><span class="lshort" aria-hidden="true">' + esc(REG.code.split("-")[0].toUpperCase()) + '</span>';
   b.setAttribute("aria-label", (a["settings.language"] || "Language") + ": " + REG.endonym);
-  $("#langq").placeholder = a["language.search"] || "Search languages"; $("#langq").setAttribute("aria-label", a["language.search"] || "Search languages");
-  $("#langtitle").textContent = a["settings.language"] || "Language"; $("#langclose").setAttribute("aria-label", a["action.close"] || "Close");
-  $("#langlegend").textContent = T.legend || window.I18N.en.legend;
-  b.addEventListener("click", openLang);
-  $("#langclose").addEventListener("click", function () { $("#langdlg").close(); });
-  $("#langq").addEventListener("input", function () { LP.idx = 0; renderLangList(); });
-  $("#langq").addEventListener("keydown", function (e) {
-    if (e.key === "ArrowDown") { e.preventDefault(); LP.idx = Math.min(LP.items.length - 1, LP.idx + 1); renderLangList(); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); LP.idx = Math.max(0, LP.idx - 1); renderLangList(); }
-    else if (e.key === "Home") { e.preventDefault(); LP.idx = 0; renderLangList(); }
-    else if (e.key === "End") { e.preventDefault(); LP.idx = LP.items.length - 1; renderLangList(); }
-    else if (e.key === "Enter") { e.preventDefault(); if (LP.items[LP.idx]) pickLang(LP.items[LP.idx].code); }
+  b.addEventListener("click", function () {
+    LangSel.open({ title: a["settings.language"] || T.langLabel || "Language", placeholder: a["language.search"] || "Search", closeLabel: a["action.close"] || "Close", uiLocale: REG.app === "en-US" ? "en" : REG.app, current: LANG, onPick: pickLang,
+      items: window.LOCALES_REG.map(function (r) { return { code: r.code, n: r.endonym, s: r.en, lang: r.code === "en" ? "en" : r.app, rtl: r.rtl }; }) });
   });
-  $("#langlist").addEventListener("click", function (e) { var li = e.target.closest("li[data-code]"); if (li) pickLang(li.dataset.code); });
-  $("#langdlg").addEventListener("click", function (e) { if (e.target === $("#langdlg")) $("#langdlg").close(); });
 }
 initLang();
 /* ---------- chrome that is created here so the build stays simple ---------- */

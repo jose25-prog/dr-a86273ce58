@@ -182,3 +182,6 @@ body.closed #send{display:none}
 :root:lang(ja) body,:root:lang(zh-CN) body,:root:lang(zh-TW) body{line-break:strict;overflow-wrap:anywhere}
 :root:lang(ko) body{word-break:keep-all;overflow-wrap:break-word}
 :root:lang(th) body{line-break:strict}
+
+/* language selector tokens (approved blue identity) */
+:root{--ls-bg:var(--raised);--ls-fg:var(--text);--ls-mut:var(--text-2);--ls-line:var(--border-strong);--ls-hover:var(--sunken);--ls-acc:var(--brand);--ls-tint:var(--brand-tint)}
