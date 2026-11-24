@@ -29,7 +29,7 @@ var QA = /[?&]qa=1\b/.test(location.search);
 /* review access: this review is private until the founder opens it. The access code arrives in the link (?k=) and is remembered; without it the server records nothing. */
 var RC = (function () { var m = /[?&]k=([A-Za-z0-9]{8,64})/.exec(location.search); try { if (m) { localStorage.setItem("rv.k", m[1]); return m[1]; } return localStorage.getItem("rv.k") || ""; } catch (e) { return m ? m[1] : ""; } })();
 var CLOSED = false;
-var FLOW = ["landing", "about", "onboarding", "today", "train", "food", "money", "circle", "avatars", "support", "concepts", "q_areas", "q_confusing", "q_remove", "q_missing", "q_regular", "submit"];
+var FLOW = ["landing", "about", "q_first", "onboarding", "today", "train", "food", "money", "circle", "avatars", "support", "concepts", "q_areas", "q_confusing", "q_remove", "q_missing", "q_apps", "q_barriers", "q_regular", "q_pay", "submit"];
 var STEPS = FLOW;
 var DEST = ["today", "train", "food", "money", "circle"];
 var TASKS = ["t_today", "t_train", "t_food", "t_money", "t_circle", "t_avatar"];
@@ -42,7 +42,11 @@ var QCFG = {
   q_confusing: { k: "confusing", multi: true, opts: AREA7.concat(["nav", "lang"]), none: "nothingC" },
   q_remove: { k: "remove", multi: true, opts: AREA7, none: "nothingR" },
   q_missing: { k: "missing", multi: true, opts: ["m_remind", "m_auto", "m_share", "m_learn", "m_lang", "m_other"], none: "nothingM" },
-  q_regular: { k: "regular", multi: false, opts: ["daily", "weekly", "some", "never", "unsure"] }
+  q_regular: { k: "regular", multi: false, opts: ["daily", "weekly", "some", "never", "unsure"] },
+  q_first: { k: "first", multi: false, opts: ["f_clear", "f_unsure", "f_plain", "f_conf"] },
+  q_apps: { k: "apps", multi: true, opts: ["a_budget", "a_split", "a_fit", "a_plan", "a_sheet", "a_bank"], none: "nothingA" },
+  q_barriers: { k: "barriers", multi: true, opts: ["b_have", "b_priv", "b_cost", "b_complex", "b_missing", "b_lang"], none: "nothingB" },
+  q_pay: { k: "pay", multi: false, opts: ["p_def", "p_maybe", "p_prob", "p_free"] }
 };
 var AGES = ["a18", "a25", "a35", "a45", "a55", "na"];
 var INTS = ["today", "train", "food", "money", "circle", "avatars"];
@@ -57,7 +61,7 @@ var RM = function () { return window.matchMedia && matchMedia("(prefers-reduced-
 
 /* ---------- identity + state (anonymous random id; the server record is the source of truth) ---------- */
 function rid() { var a = new Uint8Array(18); (window.crypto || window.msCrypto).getRandomValues(a); return btoa(String.fromCharCode.apply(null, a)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "").slice(0, 24); }
-function blank() { return { sid: null, reached: [], fb: {}, tasks: {}, concepts: {}, final: { areas: [], confusing: [], remove: [], missing: [], regular: "", note: "" }, profile: { nick: "", age: "", country: "", interests: [] }, asked: {}, photo: "none", complete: false, step: 0 }; }
+function blank() { return { sid: null, reached: [], fb: {}, tasks: {}, concepts: {}, final: { areas: [], confusing: [], remove: [], missing: [], regular: "", note: "", first: "", apps: [], barriers: [], pay: "", appsNote: "" }, profile: { nick: "", age: "", country: "", interests: [] }, asked: {}, photo: "none", complete: false, step: 0 }; }
 var S = blank();
 try { var d0 = JSON.parse(ls("rv.draft") || "null"); if (d0 && d0.sid && /^[A-Za-z0-9_-]{16,40}$/.test(d0.sid)) { S = Object.assign(S, d0); S.final = Object.assign(blank().final, S.final); S.profile = Object.assign(blank().profile, S.profile); } } catch (e) { }
 if (!S.sid) S.sid = ls("rv.sid") || rid();
@@ -80,7 +84,7 @@ function saveLocal() { ls("rv.draft", JSON.stringify(S)); }
 /* a visit is not participation: nothing is sent until the person has actually answered, rated, tried a task or given a detail */
 function meaningful() {
   var P = S.profile, F = S.final;
-  return !!(P.nick || P.age || P.country || P.interests.length || F.areas.length || F.confusing.length || F.remove.length || F.missing.length || F.regular || F.note || S.photo !== "none" || Object.keys(S.tasks).length ||
+  return !!(P.nick || P.age || P.country || P.interests.length || F.areas.length || F.confusing.length || F.remove.length || F.missing.length || F.regular || F.note || F.first || F.apps.length || F.barriers.length || F.pay || F.appsNote || S.photo !== "none" || Object.keys(S.tasks).length ||
     Object.keys(S.fb).some(function (k) { var x = S.fb[k]; return x && (x.useful || x.ease || x.note); }) || Object.keys(S.concepts).some(function (k) { var x = S.concepts[k]; return x && x.useful; }));
 }
 function save(immediate) { saveLocal(); if (S.complete || CLOSED || !meaningful()) return; dirty = true; clearTimeout(timer); timer = setTimeout(flush, immediate ? 0 : 900); }
@@ -160,7 +164,9 @@ var ICON = {
 };
 Object.keys(ICON).forEach(function (k) { ICON[k] = ICON[k].replace("<svg ", "<svg aria-hidden=\"true\" focusable=\"false\" "); });
 function stepLabel(id) { return T.steps[id] || T.steps.final; }
-function head(id, extra) { var i = FLOW.indexOf(id); return '<p class="kicker"><span class="tile">' + (ICON[id] || ICON.final) + '</span>' + esc(stepLabel(id)) + '<span class="stepn" aria-label="' + esc(f(T.stepOf, { n: i + 1, t: FLOW.length })) + '">' + esc(f(G18.stepn, { n: i + 1, t: FLOW.length })) + '</span></p>' + (extra || ""); }
+var KIND = { onboarding: "demo", today: "demo", train: "demo", food: "demo", money: "demo", circle: "demo", avatars: "demo", support: "sum", concepts: "concept" };
+function kindChips(id) { var k = KIND[id]; if (!k) return ""; var h = '<span class="badge' + (k === "concept" ? " concept" : "") + '">' + esc(G18.kind[k]) + '</span>'; if (id === "money") h += '<span class="badge concept">' + esc(G18.kind.ext) + '</span>'; return '<p class="kinds">' + h + '</p>'; }
+function head(id, extra) { var i = FLOW.indexOf(id); return '<p class="kicker"><span class="tile">' + (ICON[id] || ICON.final) + '</span>' + esc(stepLabel(id)) + '<span class="stepn" aria-label="' + esc(f(T.stepOf, { n: i + 1, t: FLOW.length })) + '">' + esc(f(G18.stepn, { n: i + 1, t: FLOW.length })) + '</span></p>' + kindChips(id) + (extra || ""); }
 function kn(c, o) { var m = window.KITNAMES && window.KITNAMES[LANG]; return (m && m[c] && m[c][o.id]) || o.name; }
 function note() { return '<p class="samplenote">' + esc(T.sample) + '</p>'; }
 function hd(h, lead) { return '<h1 class="h2s" tabindex="-1">' + esc(h) + '</h1>' + (lead ? '<p class="lead">' + esc(lead) + '</p>' : ""); }
@@ -337,14 +343,15 @@ function renderCon() {
 function labelFor(id, v) {
   if (v === "none") return G18.q[QCFG[id].none];
   if (AREA7.indexOf(v) >= 0) return T.steps[v];
-  if (v === "nav" || v === "lang" || v.indexOf("m_") === 0) return G18.q[v];
+  if (G18.q[v]) return G18.q[v];
   return G18.q["r_" + v];
 }
 function secQ(id) {
   var c = QCFG[id], q = G18.q[c.k];
-  return head(id, hd(q.h) + '<p class="hint">' + esc(q.hint) + '</p>') + '<div class="qlist two" role="' + (c.multi ? "group" : "radiogroup") + '" aria-label="' + esc(q.h) + '" id="ql-' + id + '"></div>';
+  return head(id, hd(q.h) + '<p class="hint">' + esc(q.hint) + '</p>') + '<div class="qlist two" role="' + (c.multi ? "group" : "radiogroup") + '" aria-label="' + esc(q.h) + '" id="ql-' + id + '"></div>' + (id === "q_apps" ? '<div class="field" style="margin-top:20px"><label for="f-appsnote">' + esc(G18.q.appsNote) + ' <span class="badge">' + esc(T.optional) + '</span></label><textarea id="f-appsnote" maxlength="400" placeholder="' + esc(G18.rate.ph) + '"></textarea></div>' : "");
 }
 function renderQ(id) {
+  if (id === "q_apps" && $("#f-appsnote")) $("#f-appsnote").value = S.final.appsNote || "";
   var c = QCFG[id], cur = S.final[c.k], opts = c.opts.concat(c.none ? ["none"] : []);
   $("#ql-" + id).innerHTML = opts.map(function (v) {
     var on = c.multi ? cur.indexOf(v) >= 0 : cur === v, ic = AREA7.indexOf(v) >= 0 ? ICON[v] : v === "nav" ? ICON.nav : v === "lang" ? ICON.lang : "";
@@ -366,7 +373,7 @@ function renderSubmit() {
 }
 
 /* ---------- mount ---------- */
-var sections = { landing: secLanding, about: secAbout, onboarding: secOnb, today: secToday, train: secTrain, food: secFood, money: secMoney, circle: secCircle, avatars: secAv, support: secSup, concepts: secCon, q_areas: function () { return secQ("q_areas"); }, q_confusing: function () { return secQ("q_confusing"); }, q_remove: function () { return secQ("q_remove"); }, q_missing: function () { return secQ("q_missing"); }, q_regular: function () { return secQ("q_regular"); }, submit: secSubmit };
+var sections = { landing: secLanding, about: secAbout, onboarding: secOnb, today: secToday, train: secTrain, food: secFood, money: secMoney, circle: secCircle, avatars: secAv, support: secSup, concepts: secCon, q_first: function () { return secQ("q_first"); }, q_apps: function () { return secQ("q_apps"); }, q_barriers: function () { return secQ("q_barriers"); }, q_pay: function () { return secQ("q_pay"); }, q_areas: function () { return secQ("q_areas"); }, q_confusing: function () { return secQ("q_confusing"); }, q_remove: function () { return secQ("q_remove"); }, q_missing: function () { return secQ("q_missing"); }, q_regular: function () { return secQ("q_regular"); }, submit: secSubmit };
 function mount() {
   FLOW.forEach(function (id) { var el = document.getElementById(id); el.innerHTML = id === "landing" ? sections[id]() : '<div class="wrap">' + sections[id]() + '</div>'; });
   $("#stepper").innerHTML = DEST.map(function (id) { return '<a href="#' + id + '" data-step="' + id + '" data-d="' + id + '" data-act="dest">' + ICON[id] + '<span>' + esc(T.steps[id]) + '</span></a>'; }).join("");
@@ -554,6 +561,7 @@ document.addEventListener("input", function (e) {
   var t = e.target;
   if (t.id === "p-nick") { S.profile.nick = t.value.slice(0, 24); save(); }
   if (t.id === "rnote" && G.rate) { (S.fb[G.rate.id] || (S.fb[G.rate.id] = {})).note = t.value.slice(0, 500); save(); }
+  if (t.id === "f-appsnote") { S.final.appsNote = t.value.slice(0, 400); save(); }
   if (t.id === "f-note") { S.final.note = t.value.slice(0, 800); save(); }
   if (t.id === "pq") paintPick(t.value);
   if (t.id === "obgoal") $("#obgv").textContent = t.value;

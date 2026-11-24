@@ -161,3 +161,5 @@ body.g main{overflow-x:clip}
 
 body.closed .banner{display:block!important;background:var(--caution-tint);border-bottom-color:var(--caution-line)}
 body.closed #send{display:none}
+
+.kinds{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 14px}
