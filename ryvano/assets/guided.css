@@ -148,3 +148,13 @@ body.g main{overflow-x:clip}
 .pickbtn .pl.ph{color:var(--text-2)}
 :root[data-theme=dark] .btn.primary{background:#2563eb;border-color:#2563eb}
 :root[data-theme=dark] .ans[aria-pressed=true] .ac,:root[data-theme=dark] .ans[aria-checked=true] .ac{background:#2563eb;border-color:#2563eb}
+
+.demopill{font-size:11px;line-height:16px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:99px;background:var(--caution-tint);color:var(--caution-text);border:1px solid var(--caution-line);white-space:nowrap}
+@media(max-width:560px){.top .wm{display:none}.top .brand{gap:0}.demopill{margin-inline-start:6px}}
+.top .wrap{gap:8px}
+.lshort{display:none}
+@media(max-width:420px){.lfull{display:none}.lshort{display:inline;font-weight:700;letter-spacing:.04em}.langbtn{padding:0 10px}}
+.top .nav{display:flex;gap:2px;max-width:640px}
+.top .nav a{flex:1 1 auto;min-width:0}
+.top .nav a span{white-space:nowrap;overflow-wrap:normal;hyphens:manual}
+@media(max-width:340px){.top .nav a{font-size:10px}.top .nav a span{white-space:normal;overflow-wrap:anywhere}}

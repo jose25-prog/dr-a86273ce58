@@ -3,10 +3,7 @@
 function has(c){return C.indexOf(c)>=0}
 function detect(){var p=null;try{p=localStorage.getItem("rv.lang")}catch(e){}if(p&&has(p))return p;var L=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||"en"]);
 for(var i=0;i<L.length;i++){var l=String(L[i]).toLowerCase(),b=l.split("-")[0];
-if(l==="en"||b==="en")return"en";if(b==="es")return"es-CO";if(b==="pt")return"pt-BR";
-if(/^zh-(tw|hk|mo|hant)/.test(l))return"zh-TW";if(b==="zh")return"zh-CN";if(l.indexOf("sr-latn")===0)return"sr-Latn-RS";if(b==="nn"||b==="no")return"nb-NO";if(b==="iw")return"he-IL";
-for(var j=0;j<C.length;j++){if(C[j].toLowerCase()===l)return C[j]}
-for(var k=0;k<C.length;k++){if(C[k].toLowerCase().split("-")[0]===b&&C[k]!=="sr-Latn-RS"&&C[k]!=="zh-TW")return C[k]}}
+if(l==="en"||b==="en")return"en";if(b==="es")return"es-CO";if(b==="pt")return"pt-BR"}
 return"en"}
 location.replace(detect()+"/"+q+location.hash)})();
 </script></body></html>

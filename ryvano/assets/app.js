@@ -11,7 +11,7 @@ var FULL = !!window.I18N[LANG];
    where this page shows them; everything else stays English and the page says so. Nothing is machine-translated here. */
 function partial() {
   var t = JSON.parse(JSON.stringify(window.I18N.en)), a = APP, g = function (k, d) { return a[k] || d; };
-  t._fmt = REG.app; t._partial = true;
+  t._fmt = "en-US"; t._partial = true;
   ["today", "train", "food", "money", "circle"].forEach(function (k) { t.steps[k] = g("nav." + k, t.steps[k]); t[k].h = t.steps[k]; t.onb.areas[k] = t.steps[k]; });
   t.sup.rec = g("nav.recovery", t.sup.rec); t.sup.hea = g("nav.health", t.sup.hea); t.sup.cal = g("nav.calendar", t.sup.cal);
   t.next = g("action.next", t.next); t.back = g("action.back", t.back); t.retry = g("action.retry", t.retry); t.saved = g("state.success", t.saved);
@@ -74,7 +74,13 @@ function setStatus(kind) {
   if (kind === "fail" || kind === "offline") wasFailing = true;
 }
 function saveLocal() { ls("rv.draft", JSON.stringify(S)); }
-function save(immediate) { saveLocal(); if (S.complete) return; dirty = true; clearTimeout(timer); timer = setTimeout(flush, immediate ? 0 : 900); }
+/* a visit is not participation: nothing is sent until the person has actually answered, rated, tried a task or given a detail */
+function meaningful() {
+  var P = S.profile, F = S.final;
+  return !!(P.nick || P.age || P.country || P.interests.length || F.areas.length || F.confusing.length || F.remove.length || F.missing.length || F.regular || F.note || S.photo !== "none" || Object.keys(S.tasks).length ||
+    Object.keys(S.fb).some(function (k) { var x = S.fb[k]; return x && (x.useful || x.ease || x.note); }) || Object.keys(S.concepts).some(function (k) { var x = S.concepts[k]; return x && x.useful; }));
+}
+function save(immediate) { saveLocal(); if (S.complete || !meaningful()) return; dirty = true; clearTimeout(timer); timer = setTimeout(flush, immediate ? 0 : 900); }
 function post(p) { return fetch(API, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(p) }).then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.ok) throw new Error(j.error || r.status); return j; }); }); }
 function flush() {
   if (inflight || !dirty || S.complete) return;
@@ -147,6 +153,7 @@ var ICON = {
  moon: '<svg viewBox="0 0 24 24" width="20" height="20" ' + SV + '><path d="M20 14.500A8 8 0 1 1 9.500 4a6.500 6.500 0 0 0 10.500 10.500z"/></svg>',
  check: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>'
 };
+Object.keys(ICON).forEach(function (k) { ICON[k] = ICON[k].replace("<svg ", "<svg aria-hidden=\"true\" focusable=\"false\" "); });
 function stepLabel(id) { return T.steps[id] || T.steps.final; }
 function head(id, extra) { var i = FLOW.indexOf(id); return '<p class="kicker"><span class="tile">' + (ICON[id] || ICON.final) + '</span>' + esc(stepLabel(id)) + '<span class="stepn" aria-label="' + esc(f(T.stepOf, { n: i + 1, t: FLOW.length })) + '">' + esc(f(G18.stepn, { n: i + 1, t: FLOW.length })) + '</span></p>' + (extra || ""); }
 function kn(c, o) { var m = window.KITNAMES && window.KITNAMES[LANG]; return (m && m[c] && m[c][o.id]) || o.name; }
@@ -157,12 +164,17 @@ function hd(h, lead) { return '<h1 class="h2s" tabindex="-1">' + esc(h) + '</h1>
 var AREAS5 = DEST;
 function secLanding() {
   var H = T.hero;
-  return '<div class="hero"><div class="wrap"><div class="grid"><div><div id="resume"></div><p class="kick rv">' + esc(H.kicker) + '</p><h1 class="rv d1">' + esc(H.t1) + '<br><em>' + esc(H.t2) + '</em></h1><p class="lead big rv d2">' + esc(H.body) + '</p>' +
-    '<div class="actions rv d3"><button class="btn primary" type="button" data-act="start" id="startbtn">' + esc(H.cta) + '</button><a class="btn" href="#link">' + esc(H.cta1) + '</a></div>' +
+  return '<div class="hero"><div class="wrap"><div class="grid"><div><div id="partialnote"></div><div id="resume"></div><p class="kick rv">' + esc(H.kicker) + '</p><h1 class="rv d1">' + esc(H.t1) + '<br><em>' + esc(H.t2) + '</em></h1><p class="lead big rv d2">' + esc(H.body) + '</p>' +
+    '<p class="samplenote rv d2" style="margin:14px 0 0;max-width:52ch">' + esc(G18.demoNote) + '</p><div class="actions rv d3"><button class="btn primary" type="button" data-act="start" id="startbtn">' + esc(H.cta) + '</button><a class="btn" href="#link">' + esc(H.cta1) + '</a></div>' +
     '<ul class="how rv d3" aria-label="' + esc(T.how.h) + '">' + ["l1", "l2", "l3", "l4"].map(function (k) { return '<li>' + esc(T.how[k]) + '</li>'; }).join("") + '</ul></div>' +
-    '<div class="phone"><div class="frame"><div class="scr" id="scr">' + AREAS5.map(function (a, i) { return '<img class="l' + (i ? "" : " on") + '" data-a="' + a + '" src="../assets/app-screens/' + a + '-' + LANG + '-light.webp" alt="' + esc(T.steps[a]) + '" width="560" height="1177"' + (i ? ' loading="lazy"' : "") + '><img class="dk" data-a="' + a + '" src="../assets/app-screens/' + a + '-' + LANG + '-dark.webp" alt="" width="560" height="1177" loading="lazy">'; }).join("") + '</div></div>' +
+    '<div class="phone"><div class="frame"><div class="scr" id="scr">' + AREAS5.map(function (a, i) { return '<img class="l' + (i ? "" : " on") + '" data-a="' + a + '" src="../assets/app-screens/' + a + '-' + LANG + '-light.webp" alt="' + esc(T.steps[a]) + '" width="560" height="1177"' + (i ? ' loading="lazy"' : "") + '><img class="dk' + (i ? "" : " on") + '" data-a="' + a + '" src="../assets/app-screens/' + a + '-' + LANG + '-dark.webp" alt="" width="560" height="1177" loading="lazy">'; }).join("") + '</div></div>' +
     '<div class="areas" role="group" aria-label="' + esc(H.real) + '">' + AREAS5.map(function (a, i) { return '<button data-d="' + a + '" data-act="shot" data-a="' + a + '" aria-pressed="' + (i === 0) + '"><i></i>' + esc(T.steps[a]) + '</button>'; }).join("") + '</div><p class="samplenote" style="text-align:center;max-width:34ch">' + esc(H.realNote) + '</p></div></div></div></div>' +
     '<div class="wrap linkwrap" id="link" style="padding-bottom:96px"><p class="kicker rv"><span class="tile">' + ICON.landing + '</span>' + esc(H.demoTitle) + '</p><h2 class="rv d1">' + esc(H.linkH) + '</h2><p class="lead rv d2">' + esc(H.demoHint) + '</p><div class="link rv d2" id="web"></div><div class="linkbar"><button class="btn primary" id="webbtn" data-act="webmove"></button><span class="status" id="webstat" role="status"></span></div></div>';
+}
+function renderPartial() {
+  var el = $("#partialnote"); if (!el) return;
+  if (!T._partial) { el.innerHTML = ""; return; }
+  el.innerHTML = '<div class="resume" role="note"><h3>' + esc(G18.partial.h) + '</h3><p>' + esc(f(G18.partial.b, { lang: REG.endonym })) + '</p><div class="row">' + [["en", "English"], ["es-CO", "Espa\u00f1ol (Colombia)"], ["pt-BR", "Portugu\u00eas (Brasil)"]].map(function (x) { return '<a class="btn" href="../' + x[0] + '/" lang="' + (x[0] === "en" ? "en" : x[0]) + '">' + x[1] + '</a>'; }).join("") + '</div></div>';
 }
 function renderResume() {
   var el = $("#resume"); if (!el) return;
@@ -187,7 +199,7 @@ function secAbout() {
     '<div class="field"><span class="lb" id="p-c-l">' + esc(a.country) + ' <span class="badge">' + esc(T.optional) + '</span></span><div id="p-country"></div></div>' +
     '<div class="field"><span class="lb">' + esc(a.lang) + '</span><div class="langrow"><b>' + esc(REG.endonym) + '</b><button class="btn" type="button" data-act="chglang">' + esc(a.langChange) + '</button></div></div>' +
     '<div class="field"><span class="lb" id="p-i-l">' + esc(a.ints) + ' <span class="badge">' + esc(a.intsHint) + '</span></span><div class="chips" role="group" aria-labelledby="p-i-l" id="p-ints"></div></div>' +
-    '<p class="samplenote" style="margin:0">' + esc(a.note) + '</p></div>';
+    '<p class="samplenote" style="margin:0">' + esc(a.note) + ' <button class="btn ghost" type="button" data-act="priv" style="min-height:44px;padding:4px 10px;font-size:13px">' + esc(T.privacyLink) + '</button></p></div>';
 }
 function renderAbout() {
   var P = S.profile;
@@ -352,7 +364,7 @@ var sections = { landing: secLanding, about: secAbout, onboarding: secOnb, today
 function mount() {
   FLOW.forEach(function (id) { var el = document.getElementById(id); el.innerHTML = id === "landing" ? sections[id]() : '<div class="wrap">' + sections[id]() + '</div>'; });
   $("#stepper").innerHTML = DEST.map(function (id) { return '<a href="#' + id + '" data-step="' + id + '" data-d="' + id + '" data-act="dest">' + ICON[id] + '<span>' + esc(T.steps[id]) + '</span></a>'; }).join("");
-  renderWeb(); renderResume(); renderAbout(); renderOnb(); renderToday(); renderTrain(); renderFood(); renderMoney(); renderCircle(); avInit(); renderCon();
+  renderWeb(); renderPartial(); renderResume(); renderAbout(); renderOnb(); renderToday(); renderTrain(); renderFood(); renderMoney(); renderCircle(); avInit(); renderCon();
   Object.keys(QCFG).forEach(renderQ); renderSubmit(); TASKS.forEach(refreshTask); paintReached();
 }
 function renderAll() {
@@ -566,7 +578,7 @@ function sendFinal() {
 function delAll() {
   var s = G18.sub; if (!confirm(s.delAsk)) return;
   fetch(DEL, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ sid: S.sid }) }).then(function (r) { return r.json(); }).then(function (j) {
-    if (j.ok) { ls("rv.draft", null); ls("rv.sid", null); S = blank(); S.sid = rid(); ls("rv.sid", S.sid); dirty = false; setStatus(""); document.body.classList.remove("sent"); Object.keys(QCFG).forEach(renderQ); renderAbout(); renderCon(); renderSubmit(); renderResume(); go(0); toast(G18.toastDeleted); }
+    if (j.ok) { ls("rv.draft", null); ls("rv.sid", null); S = blank(); S.sid = rid(); ls("rv.sid", S.sid); dirty = false; setStatus(""); document.body.classList.remove("sent"); if ($("#privdlg").open) $("#privdlg").close(); Object.keys(QCFG).forEach(renderQ); renderAbout(); renderCon(); renderSubmit(); renderResume(); go(0); toast(G18.toastDeleted); }
   }).catch(function () { toast(s.err); });
 }
 function themeBtn() { var b = $("#theme"); if (!b) return; var dk = document.documentElement.dataset.theme === "dark"; b.innerHTML = dk ? ICON.sun : ICON.moon; b.setAttribute("aria-label", T.themeLabel); b.title = T.themeLabel; }
@@ -596,7 +608,7 @@ function renderLangList() {
 function openLang() { var d = $("#langdlg"); $("#langq").value = ""; LP.idx = Math.max(0, window.LOCALES_REG.map(function (r) { return r.code; }).indexOf(LANG)); renderLangList(); d.showModal(); $("#langq").focus(); }
 function initLang() {
   var a = APP, b = $("#langbtn"); if (!b) return;
-  $("#langcur").textContent = REG.endonym;
+  $("#langcur").innerHTML = '<span class="lfull">' + esc(REG.endonym) + '</span><span class="lshort" aria-hidden="true">' + esc(REG.code.split("-")[0].toUpperCase()) + '</span>';
   b.setAttribute("aria-label", (a["settings.language"] || "Language") + ": " + REG.endonym);
   $("#langq").placeholder = a["language.search"] || "Search languages"; $("#langq").setAttribute("aria-label", a["language.search"] || "Search languages");
   $("#langtitle").textContent = a["settings.language"] || "Language"; $("#langclose").setAttribute("aria-label", a["action.close"] || "Close");
@@ -620,14 +632,17 @@ function chrome() {
   var b = document.body;
   b.insertAdjacentHTML("beforeend", '<div id="toast" role="status" aria-live="polite"></div><dialog id="rsheet" class="sh"></dialog><dialog id="pick" class="sh"></dialog><div id="gbar"><div class="in"><button class="btn ghost" id="gback" type="button" data-act="gback"></button><span class="sp"></span><button class="btn ghost" id="gskip" type="button" data-act="gskip"></button><button class="btn primary" id="gnext" type="button" data-act="gnext"></button></div></div>');
   wireSheet($("#rsheet")); wireSheet($("#pick"));
+  $(".top .brand").insertAdjacentHTML("afterend", '<span class="demopill" title="' + esc(G18.demoTitle) + '" aria-label="' + esc(G18.demoTitle) + '">' + esc(G18.demo) + '</span>');
   $("#stepper").setAttribute("aria-label", G18.nav);
 }
 document.title = "RYVANO \u00b7 " + T.hero.eyebrow;
 $("#banner").textContent = T.reviewBanner; (function () { var b = $(".banner"); b.setAttribute("role", "region"); b.setAttribute("aria-label", "RYVANO"); })(); $("#privbtn").textContent = T.privacyLink; $("#foot").textContent = T.foot;
-$("#privdlg").innerHTML = '<h2 style="font-size:1.4rem">' + esc(T.priv.h) + '</h2><ul>' + T.priv.b.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") + '</ul><form method="dialog"><button class="btn primary">' + esc(T.priv.close) + '</button></form>';
+$("#privdlg").innerHTML = '<h2 style="font-size:1.4rem">' + esc(T.priv.h) + '</h2><ul>' + T.priv.b.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join("") + '</ul><p><button class="btn ghost" type="button" data-act="del">' + esc(G18.sub.del) + '</button></p><form method="dialog"><button class="btn primary">' + esc(T.priv.close) + '</button></form>';
 $("#retry").textContent = T.retry; $("#skiplink").textContent = T.skip;
 if (QA) { var q = document.createElement("span"); q.className = "badge concept"; q.textContent = "QA"; $(".top .sp").after(q); }
 themeBtn(); chrome(); mount(); reveal();
+/* a language the review is not translated into shows English review text: say so to assistive technology and keep it left-to-right */
+if (T._partial) { $("#banner").setAttribute("lang", "en"); $("#banner").setAttribute("dir", "ltr"); $("main").setAttribute("lang", "en"); if (REG.rtl) $("main").setAttribute("dir", "ltr"); }
 document.body.classList.add("g");
 var i0 = FLOW.indexOf((location.hash || "").slice(1)); go(i0 > 0 ? i0 : 0, { nopush: true, noFocus: true });
 if (i0 > 0) { try { history.replaceState({ i: i0 }, "", "#" + FLOW[i0]); } catch (e) { } }
