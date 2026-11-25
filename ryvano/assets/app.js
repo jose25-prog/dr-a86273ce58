@@ -520,7 +520,10 @@ document.addEventListener("click", function (e) {
   else if (act === "int") { var ii = S.profile.interests, ix = ii.indexOf(b.dataset.v); if (ix >= 0) ii.splice(ix, 1); else ii.push(b.dataset.v); renderAbout(); $('[data-fid="int-' + b.dataset.v + '"]').focus(); save(); }
   else if (act === "pickctry") {
     var codes = CTRY.slice().sort(function (a, c) { return regionName(a).localeCompare(regionName(c), REG.app); });
-    openPick({ title: G18.about.country, search: true, searchPh: G18.about.countrySearch, none: G18.about.countryNone, value: S.profile.country, anchor: b, items: codes.map(function (c) { return { v: c, label: regionName(c) }; }), onpick: function (v) { S.profile.country = S.profile.country === v ? "" : v; renderAbout(); $('[data-fid="ctry"]').focus(); save(); } });
+    var enR; try { enR = new Intl.DisplayNames(["en"], { type: "region" }); } catch (e) { enR = null; }
+    LangSel.open({ title: G18.about.country, placeholder: G18.about.countrySearch, none: G18.about.countryNone, closeLabel: (APP && APP["action.close"]) || "Close", uiLocale: REG.app === "en-US" ? "en" : REG.app, current: S.profile.country,
+      items: codes.map(function (c) { var en = ""; try { en = enR ? enR.of(c) : ""; } catch (e) { } return { code: c, n: regionName(c), s: "", alt: en, lang: REG.app === "en-US" ? "en" : REG.app }; }),
+      onPick: function (v) { S.profile.country = S.profile.country === v ? "" : v; renderAbout(); var cb = $('[data-fid="ctry"]'); if (cb) cb.focus({ preventScroll: true }); save(); } });
   }
   else if (act === "pickcat") { openPick({ title: G18.pick.cat, value: D.qcat, anchor: b, items: CATS.map(function (c) { return { v: c, label: T.money.cats[c], icon: ICON["c_" + c] }; }), onpick: function (v) { D.qcat = v; var am = $("#mamt").value; renderMoney(); $("#mamt").value = am; $('[data-fid="mcatb"]').focus(); } }); }
   else if (act === "pickex") { openPick({ title: G18.pick.ex, value: D.ex, anchor: b, items: [1, 2, 3].map(function (i) { return { v: i, label: T.train["ex" + i], icon: ICON.dumbbell, d: "train" }; }), onpick: function (v) { D.ex = +v; renderTrain(); $('[data-fid="texb"]').focus(); } }); }
